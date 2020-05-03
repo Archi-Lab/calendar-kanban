@@ -1,0 +1,41 @@
+vaadin-grid-cell-content {
+    height: 75px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 75px;
+}
+input{
+    color: rebeccapurple;
+}
+
+.style-Freizeit{
+    background: forestgreen;
+}
+
+.style-Bachelor{
+    background: red;
+}
+
+.columnitem label{
+    text-align: center;
+}
+
+body{
+    /**background: red;*/
+}
+
+.createTermin{
+    border-radius: 50%;
+    background: white;
+}
+
+.product-form {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    overflow: auto;
+    /*background: var(--lumo-base-color);*/
+    background: white;
+    box-shadow: 0 0 3px 2px grey;
+}
