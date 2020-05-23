@@ -1,4 +1,4 @@
-package com.example.crudwithvaadin;
+package com.example.crudwithvaadin.component;
 
 import java.awt.*;
 import java.util.ArrayList;

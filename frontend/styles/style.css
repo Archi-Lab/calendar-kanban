@@ -18,6 +18,12 @@ input{
 
 .columnitem label{
     text-align: center;
+    white-space: normal;
+    width: 100%;
+}
+
+.columnitem iron-icon{
+    margin-top: 25px;
 }
 
 body{
@@ -38,4 +44,17 @@ body{
     /*background: var(--lumo-base-color);*/
     background: white;
     box-shadow: 0 0 3px 2px grey;
+}
+
+.centerLayout{
+    align-items: baseline;
+}
+
+
+.main-layout {
+
+    /* Used by the menu and form overlays */
+    /*--overlay-box-shadow: 0 0 3px 2px var(--lumo-contrast-10pct);*/
+    --overlay-box-shadow: 0 0 3px 2px #e6fce6;
+
 }

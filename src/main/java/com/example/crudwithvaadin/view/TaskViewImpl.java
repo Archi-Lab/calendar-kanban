@@ -1,7 +1,14 @@
-package com.example.crudwithvaadin;
+package com.example.crudwithvaadin.view;
 
 import authentication.AccessControlFactory;
 import authentication.CurrentUser;
+import com.example.crudwithvaadin.component.ColumnGrid;
+import com.example.crudwithvaadin.controller.TaskViewController;
+import com.example.crudwithvaadin.entity.Category;
+import com.example.crudwithvaadin.entity.Task;
+import com.example.crudwithvaadin.entity.User;
+import com.example.crudwithvaadin.form.TaskForm;
+import com.example.crudwithvaadin.repository.BlockedTaskRepository;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.button.Button;
@@ -11,15 +18,16 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.HtmlImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.dnd.*;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
+import com.example.crudwithvaadin.repository.CategoryRepository;
+import com.example.crudwithvaadin.repository.TaskRepository;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,19 +35,17 @@ import java.util.Optional;
 @CssImport("./styles/style.css")
 @HtmlImport(value = "./html/file.html")
 @Route("Termin")
-public class TaskView extends VerticalLayout {
+public class TaskViewImpl extends VerticalLayout implements TaskView {
 
-    private TextField input = new TextField("Suche");
-    private ComboBox categoryBox = new ComboBox("Kategorie");
-    private ComboBox orderBox = new ComboBox("Sortieren");
-    private Button creatTermin = new Button();
+    //Components
+    private TextField input = new TextField("Search");
+    private ComboBox categoryBox = new ComboBox("Category");
+    private ComboBox orderBox = new ComboBox("Sort");
+    private Button creatTermin = new Button("Task");
     private Button settingsBtn = new Button();
-    private Button adminView = new Button("Adminmaske");
-    private Button createDump = new Button("Export");
-    private Button deleteOldTask = new Button("Alte Task löschen");
-    private Checkbox multiselectBox = new Checkbox("Mehrfachauswahl");
-    private Checkbox doneShow = new Checkbox("Erledigte anzeigen");
-    private List<ColumnGrid<Task>> gridList = new ArrayList<>();
+    private Button adminView = new Button("Adminmask");
+    private Checkbox multiselectBox = new Checkbox("Multiselect");
+    private Checkbox doneShow = new Checkbox("Show Done");
     private ColumnGrid<Task> laterGridToday;
     private ColumnGrid<Task> nextNweekGridTomorrow;
     private ColumnGrid<Task> nextWeekGridThisWeek;
@@ -47,43 +53,42 @@ public class TaskView extends VerticalLayout {
     private ColumnGrid<Task> todayGridThisWeek;
     private ColumnGrid<Task> nearlyDoneGridThisWeek;
     private ColumnGrid<Task> donenGridThisWeek;
+
+    //Controller
+    private TaskViewController controller = new TaskViewController(this);
+
+    //Forms
     private TaskForm form;
+
+    //Repositorys
+    private TaskRepository repo;
+    private CategoryRepository categoryRepository;
+    private BlockedTaskRepository blockedTaskRepository;
+
+    //Other Variables
     private ColumnGrid<Task> dragSource = null;
     private List<Task> draggedItems = null;
     private Category category = null;
+    private List<ColumnGrid<Task>> gridList = new ArrayList<>();
 
-    private final TaskRepository repo;
-    private final CategoryRepository categoryRepository;
-
-    public TaskView(TaskRepository repo,CategoryRepository categoryRepository){
-        this.repo=repo;
-        this.categoryRepository=categoryRepository;
-        this.form = new TaskForm(repo,categoryRepository,this);
-        laterGridToday = new ColumnGrid<Task>("Later",Task.class, Task.Priority.LATER,repo,this);
-        nextNweekGridTomorrow = new ColumnGrid<Task>("Next <n> Weeks",Task.class, Task.Priority.NEXTNWEEK,repo,this);
-        nextWeekGridThisWeek = new ColumnGrid<Task>("Next Week",Task.class, Task.Priority.NEXTWEEK,repo,this);
-        currentWeekGridThisWeek = new ColumnGrid<Task>("Current Week",Task.class, Task.Priority.CURRENTWEEK,repo,this);
-        todayGridThisWeek = new ColumnGrid<Task>("Today",Task.class, Task.Priority.TODAY,repo,this);
-        nearlyDoneGridThisWeek = new ColumnGrid<Task>("Nearly Done",Task.class, Task.Priority.NEARLYDONE,repo,this);
-        donenGridThisWeek = new ColumnGrid<Task>("Done",Task.class, Task.Priority.DONE,repo,this);
-        buildLayout();
-        configListener();
-        filltGridWithData(10);
+    public TaskViewImpl(TaskRepository repo, CategoryRepository categoryRepository, BlockedTaskRepository blockedTaskRepository) {
+        if (CurrentUser.getRole() != null){
+            this.repo = repo;
+            this.blockedTaskRepository=blockedTaskRepository;
+            this.categoryRepository = categoryRepository;
+            this.controller.onEnter();
+        }
     }
 
-    private void configListener() {
-
+    @Override
+    public void configListener() {
         ComponentEventListener<GridDragStartEvent<Task>> dragStartListener = event -> {
             draggedItems = event.getDraggedItems();
             dragSource = (ColumnGrid<Task>) event.getSource();
-            //todayGrid.setDropMode(GridDropMode.BETWEEN);
-            //tomorrowGrid.setDropMode(GridDropMode.BETWEEN);
         };
         ComponentEventListener<GridDragEndEvent<Task>> dragEndListener = event -> {
             draggedItems = null;
             dragSource = null;
-            //todayGrid.setDropMode(null);
-            //tomorrowGrid.setDropMode(null);
         };
         ComponentEventListener<GridDropEvent<Task>> dropListener = event -> {
             Optional<Task> target = event.getDropTargetItem();
@@ -104,27 +109,26 @@ public class TaskView extends VerticalLayout {
             grid.addDragEndListener(dragEndListener);
             grid.addDropListener(dropListener);
             grid.addItemDoubleClickListener(e->{
-                this.form.fillForm(e.getItem());
-                this.form.setVisible(true);
+                this.controller.taskClicked(e.getItem());
             });
         }
         this.multiselectBox.addValueChangeListener(e->{
-           gridList.forEach(grid->{grid.setSelectionMode(e.getValue()?Grid.SelectionMode.MULTI: Grid.SelectionMode.SINGLE);});
+           gridList.forEach(grid->{
+               grid.setSelectionMode(e.getValue()?Grid.SelectionMode.MULTI: Grid.SelectionMode.SINGLE);
+           });
         });
 
         this.doneShow.addValueChangeListener(e->{
             this.donenGridThisWeek.setVisibleItems(e.getValue(),this.category,this.input.getValue(),(ColumnGrid.Order) this.orderBox.getValue());
         });
 
-
         this.input.setValueChangeMode(ValueChangeMode.LAZY);
         this.input.addValueChangeListener(e->{
-            refresh();
+            refreshGridData();
         });
 
         this.creatTermin.addClickListener(e->{
-            this.form.setVisible(true);
-            this.form.fillForm(null);
+            this.controller.taskClicked(null);
         });
 
         this.adminView.addClickListener(e->{
@@ -135,14 +139,115 @@ public class TaskView extends VerticalLayout {
             getUI().get().navigate("Settings");
         });
 
-        this.deleteOldTask.addClickListener(e->{
-            this.repo.deleteAllByUserAndColumnAndDoneDateBefore(CurrentUser.getRole(), Task.Priority.DONE, LocalDate.now().minusMonths(4));
-            this.donenGridThisWeek.refreshContainer(this.category,input.getValue(),(ColumnGrid.Order) this.orderBox.getValue());
+
+        this.orderBox.addValueChangeListener(e->{
+            refreshGridData();
+        });
+
+        this.categoryBox.addValueChangeListener(e->{
+            if(e.getValue() instanceof Category){
+                this.category= (Category) e.getValue();
+            }else{
+                this.category= null;
+            }
+            refreshGridData();
         });
     }
 
-    private void buildLayout() {
+    @Override
+    public void setInitValues(){
+        orderBox.setValue(ColumnGrid.Order.Kategorie);
+        categoryBox.setValue("Alle");
+    }
 
+    @Override
+    public void buildLayout() {
+        this.add(new Label("Username: "+CurrentUser.getRole().getName()));
+
+        this.form = new TaskForm(repo, categoryRepository, this);
+        form.setVisible(false);
+
+        laterGridToday = new ColumnGrid<Task>("Later", Task.class, Task.Priority.LATER, repo, this,blockedTaskRepository);
+        nextNweekGridTomorrow = new ColumnGrid<Task>("Next " + CurrentUser.getRole().getNweeksValue() + " Weeks", Task.class, Task.Priority.NEXTNWEEK, repo, this,blockedTaskRepository);
+        nextWeekGridThisWeek = new ColumnGrid<Task>("Next Week", Task.class, Task.Priority.NEXTWEEK, repo, this,blockedTaskRepository);
+        currentWeekGridThisWeek = new ColumnGrid<Task>("Current Week", Task.class, Task.Priority.CURRENTWEEK, repo, this,blockedTaskRepository);
+        todayGridThisWeek = new ColumnGrid<Task>("Today", Task.class, Task.Priority.TODAY, repo, this,blockedTaskRepository);
+        nearlyDoneGridThisWeek = new ColumnGrid<Task>("Nearly Done", Task.class, Task.Priority.NEARLYDONE, repo, this,blockedTaskRepository);
+        donenGridThisWeek = new ColumnGrid<Task>("Done", Task.class, Task.Priority.DONE, repo, this,blockedTaskRepository);
+
+
+        creatTermin.setIcon(VaadinIcon.PLUS.create());
+        creatTermin.setClassName("createTermin");
+
+        settingsBtn.setIcon(VaadinIcon.COG.create());
+        settingsBtn.setClassName("createTermin");
+
+        this.input.setWidth("130px");
+
+        List<Object> list = new ArrayList<>();
+        list.add("Alle");
+        list.addAll(categoryRepository.findAll());
+        categoryBox.setItems(list);
+        categoryBox.setAllowCustomValue(false);
+        categoryBox.setItemLabelGenerator((ItemLabelGenerator) o -> {
+            if (o instanceof Category){
+                return ((Category) o).getBeschreibung();
+            }else if(o instanceof String){
+                return (String) o;
+            }
+            return "";
+        });
+
+        categoryBox.setWidth("170px");
+        doneShow.setValue(true);
+        orderBox.setItems(ColumnGrid.Order.values());
+        orderBox.setAllowCustomValue(false);
+
+        Button logoutButton = new Button("Logout",
+                VaadinIcon.SIGN_OUT.create());
+        logoutButton.addClickListener(event -> AccessControlFactory
+                .getInstance().createAccessControl().signOut());
+
+        HorizontalLayout headLayout = new HorizontalLayout();
+        headLayout.addClassName("centerLayout");
+        headLayout.getStyle().set("margin-top","0px");
+        headLayout.add(settingsBtn,adminView,input,categoryBox,orderBox,multiselectBox,doneShow,creatTermin,logoutButton);
+
+        if(CurrentUser.getRole()!=null&&!CurrentUser.getRole().getRolle().equals(User.Rolle.ADMIN)){
+            this.adminView.setVisible(false);
+        }
+
+        HorizontalLayout horizontalLayout = new HorizontalLayout(
+                laterGridToday,
+                nextNweekGridTomorrow,
+                nextWeekGridThisWeek,
+                currentWeekGridThisWeek,
+                todayGridThisWeek,
+                nearlyDoneGridThisWeek,
+                donenGridThisWeek
+        );
+        horizontalLayout.setSizeFull();
+
+        this.add(headLayout,horizontalLayout,form);
+        this.setSizeFull();
+        this.setClassName("main-layout");
+    }
+
+    @Override
+    public void refreshGridData(){
+        for (ColumnGrid<Task> grid :gridList){
+            grid.refreshContainer(this.category,this.input.getValue(), (ColumnGrid.Order) this.orderBox.getValue());
+        }
+    }
+
+    @Override
+    public void setVisibleForm(Task task){
+        this.form.fillForm(task);
+        this.form.setVisible(true);
+    }
+
+    @Override
+    public void fillGridList() {
         gridList.add(todayGridThisWeek);
         gridList.add(nearlyDoneGridThisWeek);
         gridList.add(nextNweekGridTomorrow);
@@ -156,93 +261,5 @@ public class TaskView extends VerticalLayout {
             grid.setSizeFull();
             grid.setDropMode(GridDropMode.BETWEEN);
         }
-
-        creatTermin.setIcon(VaadinIcon.PLUS.create());
-        creatTermin.setClassName("createTermin");
-
-        settingsBtn.setIcon(VaadinIcon.COG.create());
-        settingsBtn.setClassName("createTermin");
-
-        List<Object> list = new ArrayList<>();
-        list.add("Alle");
-        list.addAll(categoryRepository.findAll());
-        categoryBox.setItems(list);
-        categoryBox.setAllowCustomValue(false);
-        categoryBox.setItemLabelGenerator(new ItemLabelGenerator() {
-            @Override
-            public String apply(Object o) {
-                if (o instanceof Category){
-                    return ((Category) o).getBeschreibung();
-                }else if(o instanceof String){
-                    return (String) o;
-                }
-                return "";
-            }
-        });
-        categoryBox.setValue("Alle");
-        categoryBox.addValueChangeListener(e->{
-            if(e.getValue() instanceof Category){
-                this.category= (Category) e.getValue();
-            }else{
-                this.category= null;
-            }
-            refresh();
-        });
-        doneShow.setValue(true);
-        orderBox.setItems(ColumnGrid.Order.values());
-        orderBox.setAllowCustomValue(false);
-
-
-        orderBox.addValueChangeListener(e->{
-            refresh();
-        });
-        orderBox.setValue(ColumnGrid.Order.Alphabetisch);
-
-        Button logoutButton = new Button("Logout",
-                VaadinIcon.SIGN_OUT.create());
-        logoutButton.addClickListener(event -> AccessControlFactory
-                .getInstance().createAccessControl().signOut());
-        HorizontalLayout headLayout = new HorizontalLayout();
-        headLayout.add(creatTermin,settingsBtn,adminView,input,categoryBox,orderBox,multiselectBox,doneShow,createDump,deleteOldTask,logoutButton);
-
-        if(CurrentUser.getRole()!=null&&!CurrentUser.getRole().getRolle().equals(User.Rolle.ADMIN)){
-            this.adminView.setVisible(false);
-        }
-
-        HorizontalLayout horizontalLayout = new HorizontalLayout(
-                nextNweekGridTomorrow,
-                nextWeekGridThisWeek,
-                currentWeekGridThisWeek,
-                laterGridToday,
-                todayGridThisWeek,
-                nearlyDoneGridThisWeek,
-                donenGridThisWeek
-        );
-        horizontalLayout.setSizeFull();
-        add(headLayout,horizontalLayout,form);
-        form.setVisible(false);
-        this.setSizeFull();
     }
-    private ListDataProvider<Task> createDataProvider() {
-        List<Task> list = repo.findAll();
-        return new ListDataProvider<>(list);
-    }
-
-    private void filltGridWithData(int anzahl) {
-        //int i=0;
-        //this.captionGridToday.setItems(repo.findAll());
-        refresh();
-    }
-
-    public void refresh(){
-        for (ColumnGrid<Task> grid :gridList){
-            grid.refreshContainer(this.category,this.input.getValue(), (ColumnGrid.Order) this.orderBox.getValue());
-        }
-    }
-
-    public void setVisibleForm(Task task){
-        this.form.fillForm(task);
-        this.form.setVisible(true);
-    }
-
 }

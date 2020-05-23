@@ -1,6 +1,6 @@
 package authentication;
 
-import com.example.crudwithvaadin.UserRepository;
+import com.example.crudwithvaadin.repository.UserRepository;
 
 public class AccessControlFactory {
     private static final AccessControlFactory INSTANCE = new AccessControlFactory();

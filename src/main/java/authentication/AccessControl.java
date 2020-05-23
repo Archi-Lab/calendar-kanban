@@ -1,7 +1,7 @@
 package authentication;
 
-import com.example.crudwithvaadin.User;
-import com.example.crudwithvaadin.UserRepository;
+import com.example.crudwithvaadin.entity.User;
+import com.example.crudwithvaadin.repository.UserRepository;
 
 import java.io.Serializable;
 

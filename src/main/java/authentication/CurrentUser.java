@@ -1,6 +1,6 @@
 package authentication;
 
-import com.example.crudwithvaadin.User;
+import com.example.crudwithvaadin.entity.User;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinService;
 

@@ -1,11 +1,14 @@
-package com.example.crudwithvaadin;
+package com.example.crudwithvaadin.form;
 
+import com.example.crudwithvaadin.view.AdminView;
+import com.example.crudwithvaadin.entity.User;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.example.crudwithvaadin.repository.UserRepository;
 
 public class UserForm extends Div {
 
@@ -20,6 +23,7 @@ public class UserForm extends Div {
     private Button abort = new Button("Abbrechen");
     private ComboBox box = new ComboBox("Rechte");
     private VerticalLayout content;
+    private User user;
 
     public UserForm(AdminView adminView, UserRepository userRepository) {
         this.adminView = adminView;
@@ -48,10 +52,28 @@ public class UserForm extends Div {
     }
 
     private void createUser() {
-        User user = new User();
+        if(user ==null) {
+            user = new User();
+        }
         user.setName(this.username.getValue());
         user.setPassword(passwordField.getValue());
         user.setRolle((User.Rolle) box.getValue());
         this.userRepository.save(user);
+    }
+
+    public void fillLayout(User user){
+        if(user==null){
+            this.user=null;
+            username.setValue("");
+            passwordField.setValue("");
+            repeatPasswordField.setValue("");
+            box.setValue(User.Rolle.NUTZER);
+        }else{
+            this.user=user;
+            username.setValue(user.getName());
+            passwordField.setValue(user.getPassword());
+            repeatPasswordField.setValue(user.getPassword());
+            box.setValue(user.getRolle());
+        }
     }
 }

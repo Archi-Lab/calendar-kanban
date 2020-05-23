@@ -1,4 +1,4 @@
-package com.example.crudwithvaadin;
+package com.example.crudwithvaadin.entity;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;

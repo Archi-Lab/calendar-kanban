@@ -1,10 +1,10 @@
 package xmlexport;
 
 
-import com.example.crudwithvaadin.Category;
-import com.example.crudwithvaadin.Task;
+import com.example.crudwithvaadin.entity.Category;
+import com.example.crudwithvaadin.entity.Task;
 import com.example.crudwithvaadin.TaskList;
-import com.example.crudwithvaadin.User;
+import com.example.crudwithvaadin.entity.User;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -28,14 +28,14 @@ public class JaxbExample
 
         //Java object. We will convert it to XML.
         Task task1 = new Task();
-        task1.setBeschreibung("100 erledigen");
+        task1.setTitle("100 erledigen");
         task1.setCreationDate(LocalDate.now());
         task1.setColumn(Task.Priority.TODAY);
         task1.setCategory(bachelor);
         task1.setUser(user);
 
         Task task2 = new Task();
-        task2.setBeschreibung("101 erledigen");
+        task2.setTitle("101 erledigen");
         task2.setCreationDate(LocalDate.now());
         task2.setColumn(Task.Priority.LATER);
         task2.setCategory(freizeit);

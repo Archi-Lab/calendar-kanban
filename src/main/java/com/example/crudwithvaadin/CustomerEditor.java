@@ -1,5 +1,6 @@
 package com.example.crudwithvaadin;
 
+import com.example.crudwithvaadin.entity.Customer;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.KeyNotifier;
 import com.vaadin.flow.component.button.Button;
@@ -11,6 +12,7 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.example.crudwithvaadin.repository.CustomerRepository;
 
 /**
  * A simple example to introduce building forms. As your real application is probably much

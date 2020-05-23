@@ -1,23 +1,26 @@
-package com.example.crudwithvaadin;
+package com.example.crudwithvaadin.form;
 
 import authentication.CurrentUser;
+import com.example.crudwithvaadin.view.TaskViewImpl;
+import com.example.crudwithvaadin.entity.Category;
+import com.example.crudwithvaadin.entity.Task;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.example.crudwithvaadin.repository.CategoryRepository;
+import com.example.crudwithvaadin.repository.TaskRepository;
 
 import java.time.LocalDate;
 
 public class TaskForm extends Div {
 
-    private final TaskView view;
-    private TextField beschreibung = new TextField("Beschreibung");
+    private final TaskViewImpl view;
+    private TextField title = new TextField("Kurztitel");
     private ComboBox categoryBox = new ComboBox("Kategorie");
-    private Checkbox isImportant = new Checkbox("Wichtiger Termin?");
     private ComboBox columnBox = new ComboBox("Zeitpunkt");
     private ComboBox sizeBox = new ComboBox("Size");
     private DatePicker datum = new DatePicker("Wann erledigt?(Optional)");
@@ -29,7 +32,7 @@ public class TaskForm extends Div {
     private CategoryRepository categoryRepository;
     private Task task = null;
 
-    public TaskForm(TaskRepository repo,CategoryRepository categoryRepository, TaskView view){
+    public TaskForm(TaskRepository repo,CategoryRepository categoryRepository, TaskViewImpl view){
         this.repository=repo;
         this.categoryRepository=categoryRepository;
         this.view=view;
@@ -61,19 +64,17 @@ public class TaskForm extends Div {
         save.setWidth("100%");
         save.addClickListener(e->{
             if(task!=null){
-                task.setBeschreibung(beschreibung.getValue());
-                task.setImportant(isImportant.getValue());
+                task.setTitle(title.getValue());
                 task.setDueDate(datum.getValue());
                 task.setCreationDate(LocalDate.now());
                 task.setColumn((Task.Priority) columnBox.getValue());
                 task.setSize((Task.Size) sizeBox.getValue());
                 task.setCategory((Category) categoryBox.getValue());
                 repository.save(task);
-                this.view.refresh();
+                this.view.refreshGridData();
             }else{
                 Task newTask = new Task();
-                newTask.setBeschreibung(beschreibung.getValue());
-                newTask.setImportant(isImportant.getValue());
+                newTask.setTitle(title.getValue());
                 newTask.setDueDate(datum.getValue());
                 newTask.setCreationDate(LocalDate.now());
                 newTask.setColumn((Task.Priority) columnBox.getValue());
@@ -81,7 +82,7 @@ public class TaskForm extends Div {
                 newTask.setUser(CurrentUser.getRole());
                 newTask.setSize((Task.Size) sizeBox.getValue());
                 repository.save(newTask);
-                this.view.refresh();
+                this.view.refreshGridData();
             }
             task=null;
             this.setVisible(false);
@@ -90,13 +91,13 @@ public class TaskForm extends Div {
             deleteTask();
         });
         delete.setWidth("100%");
-        content.add(beschreibung,isImportant,sizeBox, columnBox,categoryBox,datum,save,delete,abort);
+        content.add(title,sizeBox, columnBox,categoryBox,datum,save,delete,abort);
     }
 
     private void deleteTask() {
         if(task!=null){
             repository.delete(task);
-            this.view.refresh();
+            this.view.refreshGridData();
             task=null;
         }
         this.setVisible(false);
@@ -105,15 +106,13 @@ public class TaskForm extends Div {
     public void fillForm(Task task){
         this.task=task;
         if(task!=null) {
-            beschreibung.setValue(task.getBeschreibung());
-            isImportant.setValue(task.isImportant());
+            title.setValue(task.getTitle());
             datum.setValue(task.getDueDate());
             columnBox.setValue(task.getColumn());
             sizeBox.setValue(task.getSize());
             categoryBox.setValue(task.getCategory());
         }else{
-            beschreibung.setValue("");
-            isImportant.setValue(false);
+            title.setValue("");
             datum.setValue(null);
             sizeBox.setValue(null);
             columnBox.setValue(null);

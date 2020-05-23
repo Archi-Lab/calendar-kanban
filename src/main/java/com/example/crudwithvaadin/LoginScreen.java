@@ -3,9 +3,8 @@ package com.example.crudwithvaadin;
 import authentication.AccessControl;
 import authentication.AccessControlFactory;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginI18n;
@@ -13,6 +12,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
+import com.example.crudwithvaadin.repository.UserRepository;
 
 /**
  * UI content when the user is not logged in yet.
@@ -76,6 +76,7 @@ public class LoginScreen extends FlexLayout {
         loginInformation.setClassName("login-information");
 
         H1 loginInfoHeader = new H1("Willkommen bei dem Kanban-Kalender");
+        Paragraph p1 = new Paragraph("Bei Fragen, melden sie sich bei: ...");
         loginInfoHeader.setWidth("100%");
         loginInfoHeader.setClassName("welcome-h1");
         Span loginInfoText = new Span(
@@ -83,6 +84,7 @@ public class LoginScreen extends FlexLayout {
         loginInfoText.setWidth("100%");
         loginInformation.add(loginInfoHeader);
         loginInformation.add(loginInfoText);
+        loginInformation.add(p1);
 
         return loginInformation;
     }

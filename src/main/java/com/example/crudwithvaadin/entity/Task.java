@@ -1,4 +1,4 @@
-package com.example.crudwithvaadin;
+package com.example.crudwithvaadin.entity;
 
 
 import xmlexport.LocalDateAdapter;
@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -23,11 +22,10 @@ public class Task {
     @GeneratedValue
     private Long id;
 
-    private String beschreibung;
+    private String title;
 
     private boolean done;
 
-    private boolean important;
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate dueDate;
 
@@ -45,8 +43,8 @@ public class Task {
     @ManyToOne
     private User user;
 
-    public Task(String beschreibung, LocalDate dueDate){
-        this.beschreibung=beschreibung;
+    public Task(String title, LocalDate dueDate){
+        this.title = title;
         this.dueDate = dueDate;
     }
 
@@ -63,12 +61,12 @@ public class Task {
         this.id = id;
     }
 
-    public String getBeschreibung() {
-        return beschreibung;
+    public String getTitle() {
+        return title;
     }
 
-    public void setBeschreibung(String beschreibung) {
-        this.beschreibung = beschreibung;
+    public void setTitle(String beschreibung) {
+        this.title = beschreibung;
     }
 
     public boolean isDone() {
@@ -77,14 +75,6 @@ public class Task {
 
     public void setDone(boolean done) {
         this.done = done;
-    }
-
-    public boolean isImportant() {
-        return important;
-    }
-
-    public void setImportant(boolean important) {
-        this.important = important;
     }
 
     public LocalDate getDueDate() {
@@ -99,9 +89,8 @@ public class Task {
     public String toString() {
         return "Termin{" +
                 "id=" + id +
-                ", beschreibung='" + beschreibung + '\'' +
+                ", title='" + title + '\'' +
                 ", done=" + done +
-                ", important=" + important +
                 ", datum=" + dueDate +
                 '}';
     }

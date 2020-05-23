@@ -1,12 +1,20 @@
-package com.example.crudwithvaadin;
+package com.example.crudwithvaadin.view;
 
 import authentication.CurrentUser;
+import com.example.crudwithvaadin.entity.Task;
+import com.example.crudwithvaadin.entity.User;
+import com.example.crudwithvaadin.form.UserForm;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.data.renderer.NativeButtonRenderer;
 import com.vaadin.flow.router.Route;
+import com.example.crudwithvaadin.repository.TaskRepository;
+import com.example.crudwithvaadin.repository.UserRepository;
 import xmlexport.JaxbExample;
 
 import javax.xml.bind.JAXBException;
@@ -31,7 +39,9 @@ public class AdminView extends VerticalLayout {
         this.taskRepository=taskRepository;
         this.userForm=new UserForm(this,userRepository);
         if(CurrentUser.getRole()!=null&&CurrentUser.getRole().getRolle().equals(User.Rolle.ADMIN)){
+            this.add(new Label("Username: "+CurrentUser.getRole().getName()));
             buildLayout();
+            setClassName("main-layout");
         }
     }
 
@@ -56,16 +66,43 @@ public class AdminView extends VerticalLayout {
                 .setSortable(false);
         this.userGrid.setWidth("100%");
         this.userGrid.setItems(userRepository.findAll());
+        this.userGrid.addItemDoubleClickListener(e->{
+           if(e.getItem() instanceof User){
+               this.userForm.fillLayout(e.getItem());
+               this.userForm.setVisible(true);
+           }
+        });
         back.addClickListener(e->{getUI().get().navigate("Termin");});
-        createNew.addClickListener(e->{this.userForm.setVisible(true);});
-        this.deleteOldTask.addClickListener(e->{
-            this.taskRepository.deleteAllByColumnAndDoneDateBefore(Task.Priority.DONE, LocalDate.now().minusMonths(4));
+        createNew.addClickListener(e->{
+            this.userForm.fillLayout(null);
+            this.userForm.setVisible(true);});
+
+        DatePicker datePicker = new DatePicker();
+        Dialog dialog = new Dialog();
+        dialog.setCloseOnEsc(false);
+        dialog.setCloseOnOutsideClick(false);
+        Button confirmButton = new Button("Confirm", event -> {
+            this.taskRepository.deleteAllByColumnAndDoneDateBefore(Task.Priority.DONE, datePicker.getValue());
+            dialog.close();
             new Notification("Nachrichten wurden gelöscht", 2000).open();
         });
-        add(back);
+        Button cancelButton = new Button("Cancel", event -> {
+            dialog.close();
+        });
+        Label dialogLabel=new Label("All tasks that are completed and older than the selected value are deleted.");
+        VerticalLayout layout = new VerticalLayout(dialogLabel,datePicker,new HorizontalLayout(confirmButton,cancelButton));
+        dialog.add(layout);
+        this.deleteOldTask.addClickListener(e->{
+            dialog.open();
+        });
+
+
+
         this.userForm.setVisible(false);
-        add(createNew);
-        add(deleteOldTask);
+        HorizontalLayout headLayout = new HorizontalLayout();
+        headLayout.addClassName("centerLayout");
+        headLayout.add(back,createNew,deleteOldTask);
+        add(headLayout);
         add(userGrid);
         add(userForm);
     }

@@ -1,7 +1,10 @@
-package com.example.crudwithvaadin;
+package com.example.crudwithvaadin.form;
 
 import authentication.CurrentUser;
-import com.vaadin.flow.component.Component;
+import com.example.crudwithvaadin.component.ColorFactory;
+import com.example.crudwithvaadin.view.SettingsView;
+import com.example.crudwithvaadin.entity.Category;
+import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Div;
@@ -9,6 +12,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.example.crudwithvaadin.repository.CategoryRepository;
 
 import java.awt.*;
 
@@ -20,6 +24,7 @@ public class CategoryForm extends Div {
 
     TextField categoryName = new TextField("Bezeichnung");
     ComboBox colorBox;
+    Icon icon = VaadinIcon.CIRCLE.create();
 
     private Button save = new Button("Speichern");
     private Button abort = new Button("Abbrechen");
@@ -80,7 +85,16 @@ public class CategoryForm extends Div {
             return hex;
         });
         colorBox.setItems(ColorFactory.getColors());
-        content.add(categoryName,colorBox,save,abort);
+        colorBox.addValueChangeListener(e->{
+            if(e.getValue() instanceof Color){
+                int r = ((Color) e.getValue()).getRed();
+                int g = ((Color) e.getValue()).getGreen();
+                int b = ((Color) e.getValue()).getBlue();
+                String hex = String.format("#%02x%02x%02x", r, g, b);
+                icon.setColor(hex);
+            }
+        });
+        content.add(categoryName,colorBox,icon,save,abort);
     }
 
     public void fillForm(Category category) {
@@ -88,9 +102,12 @@ public class CategoryForm extends Div {
         if(category==null){
             this.categoryName.setValue("");
             this.colorBox.setValue("");
+            icon.setColor("#000000");
         }else{
             this.categoryName.setValue(category.getBeschreibung());
             this.colorBox.setValue(category.getColor());
+            icon.setColor(this.category.getColor());
         }
     }
+
 }
