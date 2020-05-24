@@ -22,12 +22,12 @@ public class CategoryForm extends Div {
     private SettingsView settingsView;
     private CategoryRepository categoryRepository;
 
-    TextField categoryName = new TextField("Bezeichnung");
+    TextField categoryName = new TextField("Title");
     ComboBox colorBox;
     Icon icon = VaadinIcon.CIRCLE.create();
 
-    private Button save = new Button("Speichern");
-    private Button abort = new Button("Abbrechen");
+    private Button save = new Button("Save");
+    private Button abort = new Button("Abort");
 
     private Category category = null;
 
@@ -70,7 +70,7 @@ public class CategoryForm extends Div {
             this.setVisible(false);
         });
         abort.setWidth("100%");
-        colorBox = new ComboBox("Farbkennung");
+        colorBox = new ComboBox("Color");
         colorBox.setItemLabelGenerator(e->{
             String hex="";
             if(e instanceof Color){

@@ -15,13 +15,13 @@ public class UserForm extends Div {
     private AdminView adminView;
     private UserRepository userRepository;
 
-    private TextField username = new TextField("Nutzername");
-    private PasswordField passwordField = new PasswordField("Passwort");
-    private PasswordField repeatPasswordField = new PasswordField("Passwort wiederholen");
+    private TextField username = new TextField("Username");
+    private PasswordField passwordField = new PasswordField("Password");
+    private PasswordField repeatPasswordField = new PasswordField("Repeat password");
 
-    private Button save = new Button("Speichern");
-    private Button abort = new Button("Abbrechen");
-    private ComboBox box = new ComboBox("Rechte");
+    private Button save = new Button("Save");
+    private Button abort = new Button("Abort");
+    private ComboBox box = new ComboBox("Right");
     private VerticalLayout content;
     private User user;
 

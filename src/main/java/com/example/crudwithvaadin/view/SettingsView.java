@@ -91,7 +91,7 @@ public class SettingsView extends VerticalLayout {
             distractionFactorField.setErrorMessage("Bitte nur Zahlen");
         }
         });
-        nWeeksField = new TextField("Wochenzahl");
+        nWeeksField = new TextField("Week number");
         nWeeksField.setValue(CurrentUser.getRole().getNweeksValue()+"");
         nWeeksField.setValueChangeMode(ValueChangeMode.LAZY);
         nWeeksField.addValueChangeListener(e->{
@@ -108,7 +108,7 @@ public class SettingsView extends VerticalLayout {
         categoryGrid.setSizeFull();
         categoryGrid.setHeight("310px");
         categoryGrid.addColumn(Category::getBeschreibung)
-                .setHeader("Bezeichnung")
+                .setHeader("Title")
                 .setSortable(false)
                 .setAutoWidth(true);
         categoryGrid.addComponentColumn(this::generateColorColumn);
@@ -125,11 +125,11 @@ public class SettingsView extends VerticalLayout {
         blockedTaskGrid.setSizeFull();
         blockedTaskGrid.setHeight("310px");
         blockedTaskGrid.addColumn(BlockedTask::getBeschreibung)
-                .setHeader("Bezeichnung")
+                .setHeader("Title")
                 .setSortable(false)
                 .setAutoWidth(true);
         blockedTaskGrid.addColumn(BlockedTask::getDate)
-                .setHeader("Datum")
+                .setHeader("Date")
                 .setSortable(false)
                 .setAutoWidth(true);
         blockedTaskGrid.addColumn(BlockedTask::getStartTime)
@@ -137,7 +137,7 @@ public class SettingsView extends VerticalLayout {
                 .setSortable(false)
                 .setAutoWidth(true);
         blockedTaskGrid.addColumn(BlockedTask::getEndTime)
-                .setHeader("Ende")
+                .setHeader("End")
                 .setSortable(false)
                 .setAutoWidth(true);
         blockedTaskGrid.setItems(this.blockedTaskRepository.findByUser(CurrentUser.getRole()));
@@ -155,12 +155,12 @@ public class SettingsView extends VerticalLayout {
             getUI().get().navigate("Termin");
         });
 
-        addCategory=new Button("New Category");
+        addCategory=new Button("New category");
         addCategory.addClickListener(e->{
             this.categoryForm.fillForm(null);
             this.categoryForm.setVisible(true);
         });
-        addBlockedTask=new Button("Neuer Termin");
+        addBlockedTask=new Button("New blocked task");
         addBlockedTask.addClickListener(e->{
             this.blockedTaskForm.fillForm(null);
             this.blockedTaskForm.setVisible(true);
@@ -453,12 +453,31 @@ public class SettingsView extends VerticalLayout {
 
 
     private Button generateDeleteButton(Category category) {
-        Button retButton = new Button("Löschen");
-        retButton.addClickListener(e->{
+        Button retButton = new Button("Delete");
+        retButton.addClassName("deleteBtn");
+        retButton.setIcon(VaadinIcon.TRASH.create());
+
+        Dialog dialog = new Dialog();
+        dialog.setCloseOnEsc(false);
+        dialog.setCloseOnOutsideClick(false);
+        Button confirmButton = new Button("Confirm", event -> {
             this.taskRepository.deleteAllByUserAndCategory(CurrentUser.getRole(),category);
             this.categoryRepository.delete(category);
             this.refreshGrid();
+            dialog.close();
         });
+        confirmButton.addClassName("deleteBtn");
+        Button cancelButton = new Button("Cancel", event -> {
+            dialog.close();
+        });
+        Label dialogLabel=new Label("All tasks with this category will be deleted");
+        VerticalLayout layout = new VerticalLayout(dialogLabel,new HorizontalLayout(confirmButton,cancelButton));
+        dialog.add(layout);
+        retButton.addClickListener(e->{
+            dialog.open();
+        });
+
+
         return retButton;
     }
 

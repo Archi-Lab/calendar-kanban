@@ -10,6 +10,7 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -27,9 +28,9 @@ import java.util.List;
 public class AdminViewImpl extends VerticalLayout implements AdminView {
 
     private Grid<User> userGrid = new Grid<>(User.class,false);
-    private Button back = new Button("Zurück");
-    private Button createNew = new Button("Nutzer anlegen");
-    private Button deleteOldTask = new Button("Alte Task aus System löschen");
+    private Button back = new Button();
+    private Button createNew = new Button("Create user");
+    private Button deleteOldTask = new Button("Delete old tasks");
     private UserRepository userRepository;
     private TaskRepository taskRepository;
     private UserForm userForm;
@@ -70,7 +71,7 @@ public class AdminViewImpl extends VerticalLayout implements AdminView {
                 .setAutoWidth(true);
         this.userGrid
                 .addColumn(User::getRolle)
-                .setHeader("Rechte")
+                .setHeader("Rights")
                 .setSortable(false)
                 .setAutoWidth(true);
         this.userGrid.addComponentColumn(this::generateBtn)
@@ -88,6 +89,8 @@ public class AdminViewImpl extends VerticalLayout implements AdminView {
         this.deleteOldTask.addClickListener(e->{
             dialog.open();
         });
+
+        back.setIcon(VaadinIcon.ARROW_BACKWARD.create());
 
         this.userForm.setVisible(false);
         HorizontalLayout headLayout = new HorizontalLayout();
@@ -108,11 +111,31 @@ public class AdminViewImpl extends VerticalLayout implements AdminView {
 
     private Button generateBtn(User user) {
         Button retButton = new Button("Löschen");
-        retButton.addClickListener(e->{
+        retButton.addClassName("deleteBtn");
+        retButton.setIcon(VaadinIcon.TRASH.create());
+
+        Dialog dialog = new Dialog();
+        dialog.setCloseOnEsc(false);
+        dialog.setCloseOnOutsideClick(false);
+        Button confirmButton = new Button("Confirm", event -> {
             this.taskRepository.deleteAllByUser(user);
             this.userRepository.delete(user);
             this.refreshGrid();
+            dialog.close();
         });
+        confirmButton.addClassName("deleteBtn");
+        Button cancelButton = new Button("Cancel", event -> {
+            dialog.close();
+        });
+        Label dialogLabel=new Label("Do you want to delete the user \""+user.getName()+"\"?");
+        VerticalLayout layout = new VerticalLayout(dialogLabel,new HorizontalLayout(confirmButton,cancelButton));
+        dialog.add(layout);
+        retButton.addClickListener(e->{
+            dialog.open();
+        });
+
+
+
         return retButton;
     }
 

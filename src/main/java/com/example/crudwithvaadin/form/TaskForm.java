@@ -4,11 +4,15 @@ import authentication.CurrentUser;
 import com.example.crudwithvaadin.view.TaskViewImpl;
 import com.example.crudwithvaadin.entity.Category;
 import com.example.crudwithvaadin.entity.Task;
+import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ItemLabelGenerator;
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.KeyModifier;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.example.crudwithvaadin.repository.CategoryRepository;
@@ -19,14 +23,14 @@ import java.time.LocalDate;
 public class TaskForm extends Div {
 
     private final TaskViewImpl view;
-    private TextField title = new TextField("Kurztitel");
-    private ComboBox categoryBox = new ComboBox("Kategorie");
-    private ComboBox columnBox = new ComboBox("Zeitpunkt");
+    private TextField title = new TextField("Titel");
+    private ComboBox categoryBox = new ComboBox("Category");
+    private ComboBox columnBox = new ComboBox("Column");
     private ComboBox sizeBox = new ComboBox("Size");
-    private DatePicker datum = new DatePicker("Wann erledigt?(Optional)");
-    private Button save = new Button("Speichern");
-    private Button abort = new Button("Abbrechen");
-    private Button delete = new Button("Löschen");
+    private DatePicker datum = new DatePicker("Deadline(Optional)");
+    private Button save = new Button("Save");
+    private Button abort = new Button("Abort");
+    private Button delete = new Button("Delete");
     private VerticalLayout content;
     private TaskRepository repository;
     private CategoryRepository categoryRepository;
@@ -37,9 +41,7 @@ public class TaskForm extends Div {
         this.categoryRepository=categoryRepository;
         this.view=view;
         this.sizeBox.setItems(Task.Size.values());
-        this.sizeBox.setValue(Task.Size.M);
         this.columnBox.setItems(Task.Priority.values());
-        this.columnBox.setValue(Task.Priority.TODAY);
         this.columnBox.setAllowCustomValue(false);
         categoryBox.setItems(categoryRepository.findByOwner(CurrentUser.getRole()));
         categoryBox.setItemLabelGenerator(new ItemLabelGenerator() {
@@ -62,36 +64,42 @@ public class TaskForm extends Div {
         abort.setWidth("100%");
 
         save.setWidth("100%");
-        save.addClickListener(e->{
-            if(task!=null){
-                task.setTitle(title.getValue());
-                task.setDueDate(datum.getValue());
-                task.setCreationDate(LocalDate.now());
-                task.setColumn((Task.Priority) columnBox.getValue());
-                task.setSize((Task.Size) sizeBox.getValue());
-                task.setCategory((Category) categoryBox.getValue());
-                repository.save(task);
-                this.view.refreshGridData();
-            }else{
-                Task newTask = new Task();
-                newTask.setTitle(title.getValue());
-                newTask.setDueDate(datum.getValue());
-                newTask.setCreationDate(LocalDate.now());
-                newTask.setColumn((Task.Priority) columnBox.getValue());
-                newTask.setCategory((Category) categoryBox.getValue());
-                newTask.setUser(CurrentUser.getRole());
-                newTask.setSize((Task.Size) sizeBox.getValue());
-                repository.save(newTask);
-                this.view.refreshGridData();
-            }
-            task=null;
-            this.setVisible(false);
-        });
+        save.addClickListener(this::saveTaskEvent);
+        save.addClickShortcut(Key.KEY_S, KeyModifier.ALT);
+
         delete.addClickListener(e->{
             deleteTask();
         });
         delete.setWidth("100%");
-        content.add(title,sizeBox, columnBox,categoryBox,datum,save,delete,abort);
+        delete.addClassName("deleteBtn");
+        delete.setIcon(VaadinIcon.TRASH.create());
+        content.add(title,sizeBox, columnBox,categoryBox,datum,save,abort,delete);
+    }
+
+    private void saveTaskEvent(ClickEvent<Button> buttonClickEvent) {
+        if(task!=null){
+            task.setTitle(title.getValue());
+            task.setDueDate(datum.getValue());
+            task.setCreationDate(LocalDate.now());
+            task.setColumn((Task.Priority) columnBox.getValue());
+            task.setSize((Task.Size) sizeBox.getValue());
+            task.setCategory((Category) categoryBox.getValue());
+            repository.save(task);
+            this.view.refreshGridData();
+        }else{
+            Task newTask = new Task();
+            newTask.setTitle(title.getValue());
+            newTask.setDueDate(datum.getValue());
+            newTask.setCreationDate(LocalDate.now());
+            newTask.setColumn((Task.Priority) columnBox.getValue());
+            newTask.setCategory((Category) categoryBox.getValue());
+            newTask.setUser(CurrentUser.getRole());
+            newTask.setSize((Task.Size) sizeBox.getValue());
+            repository.save(newTask);
+            this.view.refreshGridData();
+        }
+        task=null;
+        this.setVisible(false);
     }
 
     private void deleteTask() {
@@ -114,9 +122,9 @@ public class TaskForm extends Div {
         }else{
             title.setValue("");
             datum.setValue(null);
-            sizeBox.setValue(null);
-            columnBox.setValue(null);
+            this.sizeBox.setValue(Task.Size.M);
             categoryBox.setValue(null);
+            this.columnBox.setValue(Task.Priority.TODAY);
         }
     }
 

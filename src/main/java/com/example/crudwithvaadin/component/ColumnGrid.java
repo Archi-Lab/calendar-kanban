@@ -32,11 +32,14 @@ public class ColumnGrid<T> extends Grid<T> {
     private Task.Priority priority;
     private TaskRepository repository;
     private BlockedTaskRepository blockedTaskRepository;
+    private String caption;
+    private String rootCaption;
 
     public ColumnGrid(String caption, Class<T> beanType, Task.Priority priority, TaskRepository repository, TaskView taskView , BlockedTaskRepository blockedTaskRepository){
         super(beanType,false);
         Grid.Column<T> column = this.addComponentColumn(this::generateLabel)
                 .setHeader(caption)
+                .setKey(caption)
                 .setAutoWidth(true)
                 .setClassNameGenerator(new ItemLabelGenerator<T>() {
                     @Override
@@ -49,6 +52,8 @@ public class ColumnGrid<T> extends Grid<T> {
                 })
                 .setSortable(false);
         this.getHeaderRows().removeAll(this.getHeaderRows());
+        this.caption=caption;
+        this.rootCaption=caption;
         this.repository=repository;
         this.priority=priority;
         this.blockedTaskRepository=blockedTaskRepository;
@@ -113,7 +118,7 @@ public class ColumnGrid<T> extends Grid<T> {
         this.priority = priority;
     }
 
-    public void refreshContainer(Category category, String string, Order order){
+    public void refreshContainer(Category category, String string, Order order, boolean asc){
         List<T> retList=null;
         if(category==null) {
             if(string.length()>1){
@@ -135,19 +140,28 @@ public class ColumnGrid<T> extends Grid<T> {
                     @Override
                     public int compare(T o1, T o2) {
                         if(o1 instanceof Task && o2 instanceof Task) {
-                            if(order.equals(Order.Kategorie)){
-                                return ((Task) o1).getCategory().getBeschreibung().compareTo(((Task) o2).getCategory().getBeschreibung());
-                            }else if(order.equals(Order.Größe)){
+                            if(order.equals(Order.Category)){
+                                if(asc)
+                                    return ((Task) o1).getCategory().getBeschreibung().compareTo(((Task) o2).getCategory().getBeschreibung());
+                                else
+                                    return ((Task) o2).getCategory().getBeschreibung().compareTo(((Task) o1).getCategory().getBeschreibung());
+                            }else if(order.equals(Order.Size)){
                                 int o1int = CurrentUser.getRole().getSizeSettings().get(((Task) o1).getSize().toString());
                                 int o2int = CurrentUser.getRole().getSizeSettings().get(((Task) o2).getSize().toString());
-                                return o2int-o1int;
-                            }else if(order.equals(Order.AnzahlDerTageBisEnde)){
+                                if(asc)
+                                    return o1int-o2int;
+                                else
+                                    return o2int-o1int;
+                            }else if(order.equals(Order.Deadline)){
                                 if(((Task) o2).getDueDate()==null && ((Task) o1).getDueDate()==null) return 0;
                                 if(((Task) o2).getDueDate()==null) return 1;
                                 if(((Task) o1).getDueDate()==null) return 2;
                                 Long tage1 = ChronoUnit.DAYS.between(LocalDate.now(), ((Task) o1).getDueDate().atStartOfDay());
                                 Long tage2 = ChronoUnit.DAYS.between(LocalDate.now(), ((Task) o2).getDueDate().atStartOfDay());
-                                return tage1.compareTo(tage2);
+                                if(asc)
+                                    return tage1.compareTo(tage2);
+                                else
+                                    return tage2.compareTo(tage1);
                             }
                         }
                         return 0;
@@ -181,9 +195,11 @@ public class ColumnGrid<T> extends Grid<T> {
                     }
                 }
                 if(maxsize<sizeOfTasks){
-                    this.getStyle().set("background","red");
+                    this.addClassName("toBusyGrid");
+                    this.getColumnByKey(rootCaption).setHeader(rootCaption+" ("+Math.round(maxsize-sizeOfTasks)+" Min)");
                 }else{
-                    this.getStyle().set("background","white");
+                    this.getColumnByKey(rootCaption).setHeader(rootCaption);
+                    this.removeClassName("toBusyGrid");
                 }
                 break;
             case CURRENTWEEK:
@@ -240,9 +256,11 @@ public class ColumnGrid<T> extends Grid<T> {
                     }
                 }
                 if(maxSizeCurrentWeek<sizeOfTasksCurrentWeek){
-                    this.getStyle().set("background","red");
+                    this.addClassName("toBusyGrid");
+                    this.getColumnByKey(rootCaption).setHeader(rootCaption+" ("+Math.round(maxSizeCurrentWeek-sizeOfTasksCurrentWeek)+" Min)");
                 }else{
-                    this.getStyle().set("background","white");
+                    this.getColumnByKey(rootCaption).setHeader(rootCaption);
+                    this.removeClassName("toBusyGrid");
                 }
                 break;
             case NEXTWEEK:
@@ -273,9 +291,11 @@ public class ColumnGrid<T> extends Grid<T> {
                     }
                 }
                 if(maxSizeWeek<sizeOfTasksweek){
-                    this.getStyle().set("background","red");
+                    this.addClassName("toBusyGrid");
+                    this.getColumnByKey(rootCaption).setHeader(rootCaption+" ("+Math.round(maxSizeWeek-sizeOfTasksweek)+" Min)");
                 }else{
-                    this.getStyle().set("background","white");
+                    this.getColumnByKey(rootCaption).setHeader(rootCaption);
+                    this.removeClassName("toBusyGrid");
                 }
                 break;
             case NEXTNWEEK:
@@ -307,23 +327,25 @@ public class ColumnGrid<T> extends Grid<T> {
                     }
                 }
                 if(maxSizeNWeek<sizeOfTasksNWeek){
-                    this.getStyle().set("background","red");
+                    this.addClassName("toBusyGrid");
+                    this.getColumnByKey(rootCaption).setHeader(rootCaption+" ("+Math.round(maxSizeNWeek-sizeOfTasksNWeek)+" Min)");
                 }else{
-                    this.getStyle().set("background","white");
+                    this.getColumnByKey(rootCaption).setHeader(rootCaption);
+                    this.removeClassName("toBusyGrid");
                 }
                 break;
         }
     }
 
-    public void setVisibleItems(boolean show,Category category,String string,Order order){
+    public void setVisibleItems(boolean show,Category category,String string,Order order,boolean asc){
         if(show){
-            refreshContainer(category,string,order);
+            refreshContainer(category,string,order,asc);
         }else{
             this.setItems(Arrays.asList());
         }
     }
 
     public enum Order{
-        Kategorie,Größe,AnzahlDerTageBisEnde
+        Category, Size, Deadline
     }
 }

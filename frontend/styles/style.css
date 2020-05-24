@@ -26,10 +26,6 @@ input{
     margin-top: 25px;
 }
 
-body{
-    /**background: red;*/
-}
-
 .createTermin{
     border-radius: 50%;
     background: white;
@@ -50,6 +46,17 @@ body{
     align-items: baseline;
 }
 
+.toBusyGrid{
+    background: red;
+}
+
+.toBusyGrid vaadin-grid-cell-content{
+    background: red;
+}
+
+.deleteBtn{
+    color: red;
+}
 
 .main-layout {
 

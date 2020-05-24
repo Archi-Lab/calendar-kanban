@@ -7,6 +7,7 @@ import com.example.crudwithvaadin.repository.BlockedTaskRepository;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
@@ -18,9 +19,9 @@ public class BlockedTaskForm extends Div {
     private DatePicker datePicker;
     private TimePicker startTimePicker;
     private TimePicker endTimePicker;
-    private Button abort = new Button("Abbrechen");
-    private Button delete = new Button("Löschen");
-    private Button save = new Button("Speichern");
+    private Button abort = new Button("Abort");
+    private Button delete = new Button("Delete");
+    private Button save = new Button("Save");
     private SettingsView settingsView;
     private BlockedTask blockedTask;
 
@@ -34,10 +35,10 @@ public class BlockedTaskForm extends Div {
 
     private void buildLayout(){
 
-        beschreibung = new TextField("Beschreibung");
-        datePicker = new DatePicker("Datum");
+        beschreibung = new TextField("Title");
+        datePicker = new DatePicker("Date");
         startTimePicker = new TimePicker("Start");
-        endTimePicker = new TimePicker("Ende");
+        endTimePicker = new TimePicker("End");
 
 
         setClassName("product-form");
@@ -48,7 +49,9 @@ public class BlockedTaskForm extends Div {
         abort.addClickListener(e->{
            this.setVisible(false);
         });
+        abort.setWidth("100%");
 
+        save.setWidth("100%");
         save.addClickListener(e->{
             this.setVisible(false);
             if(this.blockedTask==null){
@@ -71,6 +74,9 @@ public class BlockedTaskForm extends Div {
             }
             this.settingsView.refreshGrid();
         });
+        delete.addClassName("deleteBtn");
+        delete.setWidth("100%");
+        delete.setIcon(VaadinIcon.TRASH.create());
 
         content.add(beschreibung,datePicker,startTimePicker,endTimePicker,save,abort,delete);
     }
