@@ -1,8 +1,9 @@
 vaadin-grid-cell-content {
-    height: 75px;
+    /*height: 75px;
     text-align: center;
     vertical-align: middle;
-    line-height: 75px;
+    line-height: 75px;*/
+    text-align: center;
 }
 input{
     color: rebeccapurple;
@@ -23,7 +24,7 @@ input{
 }
 
 .columnitem iron-icon{
-    margin-top: 25px;
+    height: 100%;
 }
 
 .createTermin{
