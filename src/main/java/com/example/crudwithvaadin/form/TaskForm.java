@@ -73,6 +73,7 @@ public class TaskForm extends Div {
         delete.setWidth("100%");
         delete.addClassName("deleteBtn");
         delete.setIcon(VaadinIcon.TRASH.create());
+        delete.addClickShortcut(Key.KEY_D, KeyModifier.ALT);
         content.add(title,sizeBox, columnBox,categoryBox,datum,save,abort,delete);
     }
 

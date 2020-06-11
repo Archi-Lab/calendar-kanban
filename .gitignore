@@ -24,8 +24,8 @@ hs_err_pid*
 
 target/
 Anforderungen.xlsx
-employee.xml
 export.xml
 .idea
 PP2020.iml
 node_modules/
+db

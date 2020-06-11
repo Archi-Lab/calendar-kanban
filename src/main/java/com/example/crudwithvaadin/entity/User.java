@@ -4,13 +4,13 @@ import javax.persistence.*;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Entity
 public class User {
 
     @Id
-    @GeneratedValue
-    private Long id;
+    private UUID id = UUID.randomUUID();
 
     private String username;
 
@@ -22,6 +22,8 @@ public class User {
 
     private int nweeksValue;
 
+    private boolean connectGoogle;
+
     @ElementCollection(fetch = FetchType.EAGER)
     private Map<String,Integer> sizeSettings = new HashMap<String, Integer>();
 
@@ -32,6 +34,10 @@ public class User {
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Map<String, LocalTime> blockedTimeSettings = new HashMap<String, LocalTime>();
+
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Map<String, Integer> priorityHeightSettings = new HashMap<String, Integer>();
 
     public User() {
         sizeSettings.put(Task.Size.S.name(),1);
@@ -52,6 +58,13 @@ public class User {
         blockedTimeSettings.put("FRIDAY",LocalTime.MIN);
         blockedTimeSettings.put("SATURDAY", LocalTime.MIN);
         blockedTimeSettings.put("SUNDAY", LocalTime.MIN);
+        priorityHeightSettings.put(Task.Priority.LATER.name(),74);
+        priorityHeightSettings.put(Task.Priority.NEXTNWEEK.name(),74);
+        priorityHeightSettings.put(Task.Priority.NEXTWEEK.name(),74);
+        priorityHeightSettings.put(Task.Priority.CURRENTWEEK.name(),74);
+        priorityHeightSettings.put(Task.Priority.TODAY.name(),74);
+        priorityHeightSettings.put(Task.Priority.NEARLYDONE.name(),74);
+        priorityHeightSettings.put(Task.Priority.DONE.name(),74);
         distractionFactor=30;
         nweeksValue=1;
     }
@@ -75,6 +88,13 @@ public class User {
         blockedTimeSettings.put("FRIDAY",LocalTime.MIN);
         blockedTimeSettings.put("SATURDAY", LocalTime.MIN);
         blockedTimeSettings.put("SUNDAY", LocalTime.MIN);
+        priorityHeightSettings.put(Task.Priority.LATER.name(),74);
+        priorityHeightSettings.put(Task.Priority.NEXTNWEEK.name(),74);
+        priorityHeightSettings.put(Task.Priority.NEXTWEEK.name(),74);
+        priorityHeightSettings.put(Task.Priority.CURRENTWEEK.name(),74);
+        priorityHeightSettings.put(Task.Priority.TODAY.name(),74);
+        priorityHeightSettings.put(Task.Priority.NEARLYDONE.name(),74);
+        priorityHeightSettings.put(Task.Priority.DONE.name(),74);
         distractionFactor=30;
         nweeksValue=1;
         this.username = name;
@@ -134,7 +154,17 @@ public class User {
         this.nweeksValue = nweeksValue;
     }
 
+    public boolean isConnectGoogle() {
+        return connectGoogle;
+    }
 
+    public void setConnectGoogle(boolean connectGoogle) {
+        this.connectGoogle = connectGoogle;
+    }
+
+    public Map<String, Integer> getPriorityHeightSettings() {
+        return priorityHeightSettings;
+    }
 
     public enum Rolle{
         NUTZER,ADMIN

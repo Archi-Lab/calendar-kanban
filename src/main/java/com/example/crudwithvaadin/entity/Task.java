@@ -1,6 +1,7 @@
 package com.example.crudwithvaadin.entity;
 
 
+import authentication.CurrentUser;
 import xmlexport.LocalDateAdapter;
 
 import javax.persistence.Entity;
@@ -12,6 +13,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -19,8 +21,7 @@ import java.time.LocalDate;
 public class Task {
 
     @Id
-    @GeneratedValue
-    private Long id;
+    private UUID id = UUID.randomUUID();
 
     private String title;
 
@@ -52,14 +53,6 @@ public class Task {
     private LocalDate doneDate;
 
     public Task(){}
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getTitle() {
         return title;
@@ -97,8 +90,8 @@ public class Task {
 
     public enum Priority{
 
-        LATER("Später"),NEXTNWEEK("Nächste N Woche"),NEXTWEEK("Nächste WOche"),
-        CURRENTWEEK("Diese Woche"),TODAY("Heute"),NEARLYDONE("Zeitnah"),DONE("Erledigt");
+        LATER("Later"),NEXTNWEEK("Next $ Week"),NEXTWEEK("Next Week"),
+        CURRENTWEEK("Current Week"),TODAY("Today"),NEARLYDONE("Nearly Done"),DONE("Done");
 
         private String bezeichnung;
 
@@ -168,5 +161,17 @@ public class Task {
 
     public enum Size{
         S,M,L,XL
+    }
+
+    public Task copy(){
+        Task task = new Task();
+        task.setColumn(this.getColumn());
+        task.setCreationDate(this.getCreationDate());
+        task.setDueDate(this.getDueDate());
+        task.setSize(this.getSize());
+        task.setTitle(this.getTitle());
+        task.setDone(this.isDone());
+        task.setDoneDate(this.getDoneDate());
+        return task;
     }
 }

@@ -8,7 +8,7 @@ import com.example.crudwithvaadin.entity.Category;
 import com.example.crudwithvaadin.entity.Task;
 import com.example.crudwithvaadin.entity.User;
 import com.example.crudwithvaadin.form.TaskForm;
-import com.example.crudwithvaadin.repository.BlockedTaskRepository;
+import com.example.crudwithvaadin.repository.UserRepository;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.Key;
@@ -40,15 +40,15 @@ import java.util.Optional;
 public class TaskViewImpl extends VerticalLayout implements TaskView {
 
     //Components
-    private TextField input = new TextField("Search");
-    private ComboBox categoryBox = new ComboBox("Category");
-    private ComboBox orderBox = new ComboBox("Sort");
-    private Button creatTermin = new Button("Task");
-    private Button settingsBtn = new Button();
-    private Button ascdescButton = new Button();
-    private Button adminView = new Button("Adminmask");
-    private Checkbox multiselectBox = new Checkbox("Multiselect");
-    private Checkbox doneShow = new Checkbox("Show Done");
+    private final TextField input = new TextField("Search");
+    private final ComboBox<Object> categoryBox = new ComboBox<Object>("Category");
+    private final ComboBox<ColumnGrid.Order> orderBox = new ComboBox<ColumnGrid.Order>("Sort");
+    private final Button creatTermin = new Button("Task");
+    private final Button settingsBtn = new Button();
+    private final Button ascdescButton = new Button();
+    private final Button adminView = new Button("Adminmask");
+    private final Checkbox multiselectBox = new Checkbox("Multiselect");
+    private final Checkbox doneShow = new Checkbox("Show Done");
     private ColumnGrid<Task> laterGridToday;
     private ColumnGrid<Task> nextNweekGridTomorrow;
     private ColumnGrid<Task> nextWeekGridThisWeek;
@@ -66,7 +66,7 @@ public class TaskViewImpl extends VerticalLayout implements TaskView {
     //Repositorys
     private TaskRepository repo;
     private CategoryRepository categoryRepository;
-    private BlockedTaskRepository blockedTaskRepository;
+    private UserRepository userRepository;
 
     //Other Variables
     private ColumnGrid<Task> dragSource = null;
@@ -76,10 +76,10 @@ public class TaskViewImpl extends VerticalLayout implements TaskView {
     private boolean isInit = false;
     private boolean isASC = true;
 
-    public TaskViewImpl(TaskRepository repo, CategoryRepository categoryRepository, BlockedTaskRepository blockedTaskRepository) {
+    public TaskViewImpl(TaskRepository repo, CategoryRepository categoryRepository,UserRepository userRepository) {
         if (CurrentUser.getRole() != null){
             this.repo = repo;
-            this.blockedTaskRepository=blockedTaskRepository;
+            this.userRepository=userRepository;
             this.categoryRepository = categoryRepository;
             this.controller.onEnter();
         }
@@ -187,20 +187,20 @@ public class TaskViewImpl extends VerticalLayout implements TaskView {
         this.form = new TaskForm(repo, categoryRepository, this);
         form.setVisible(false);
 
-        laterGridToday = new ColumnGrid<Task>("Later", Task.class, Task.Priority.LATER, repo, this,blockedTaskRepository);
-        nextNweekGridTomorrow = new ColumnGrid<Task>("Next " + CurrentUser.getRole().getNweeksValue() + " Weeks", Task.class, Task.Priority.NEXTNWEEK, repo, this,blockedTaskRepository);
-        nextWeekGridThisWeek = new ColumnGrid<Task>("Next Week", Task.class, Task.Priority.NEXTWEEK, repo, this,blockedTaskRepository);
-        currentWeekGridThisWeek = new ColumnGrid<Task>("Current Week", Task.class, Task.Priority.CURRENTWEEK, repo, this,blockedTaskRepository);
-        todayGridThisWeek = new ColumnGrid<Task>("Today", Task.class, Task.Priority.TODAY, repo, this,blockedTaskRepository);
-        nearlyDoneGridThisWeek = new ColumnGrid<Task>("Nearly Done", Task.class, Task.Priority.NEARLYDONE, repo, this,blockedTaskRepository);
-        donenGridThisWeek = new ColumnGrid<Task>("Done", Task.class, Task.Priority.DONE, repo, this,blockedTaskRepository);
+        laterGridToday = new ColumnGrid<Task>("Later", Task.class, Task.Priority.LATER, repo, this,userRepository);
+        nextNweekGridTomorrow = new ColumnGrid<Task>("Next " + CurrentUser.getRole().getNweeksValue() + " Weeks", Task.class, Task.Priority.NEXTNWEEK, repo, this,userRepository);
+        nextWeekGridThisWeek = new ColumnGrid<Task>("Next Week", Task.class, Task.Priority.NEXTWEEK, repo, this,userRepository);
+        currentWeekGridThisWeek = new ColumnGrid<Task>("Current Week", Task.class, Task.Priority.CURRENTWEEK, repo, this,userRepository);
+        todayGridThisWeek = new ColumnGrid<Task>("Today", Task.class, Task.Priority.TODAY, repo, this,userRepository);
+        nearlyDoneGridThisWeek = new ColumnGrid<Task>("Nearly Done", Task.class, Task.Priority.NEARLYDONE, repo, this,userRepository);
+        donenGridThisWeek = new ColumnGrid<Task>("Done", Task.class, Task.Priority.DONE, repo, this,userRepository);
 
 
         creatTermin.setIcon(VaadinIcon.PLUS.create());
-        creatTermin.setClassName("createTermin");
+        creatTermin.setClassName("btnLayout");
 
         settingsBtn.setIcon(VaadinIcon.COG.create());
-        settingsBtn.setClassName("createTermin");
+        settingsBtn.setClassName("btnLayout");
 
         this.input.setWidth("130px");
 

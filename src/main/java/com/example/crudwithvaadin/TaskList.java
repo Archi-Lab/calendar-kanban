@@ -1,5 +1,6 @@
 package com.example.crudwithvaadin;
 
+import com.example.crudwithvaadin.entity.Category;
 import com.example.crudwithvaadin.entity.Task;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -16,11 +17,28 @@ public class TaskList {
     @XmlElement(name ="task", type = Task.class)
     private List<Task> list = new ArrayList<>();
 
+
+    @XmlElement(name ="category", type = Category.class)
+    private List<Category> listCategory = new ArrayList<>();
+
     public TaskList(List<Task> tasks) {
         list=tasks;
     }
 
     public TaskList() {
+    }
+
+    public TaskList(List<Task> list, List<Category> listCategory) {
+        this.list = list;
+        this.listCategory = listCategory;
+    }
+
+    public List<Category> getListCategory() {
+        return listCategory;
+    }
+
+    public void setListCategory(List<Category> listCategory) {
+        this.listCategory = listCategory;
     }
 
     public List<Task> getList() {

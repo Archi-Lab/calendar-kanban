@@ -4,7 +4,6 @@ import authentication.CurrentUser;
 import com.example.crudwithvaadin.component.ColorFactory;
 import com.example.crudwithvaadin.view.SettingsView;
 import com.example.crudwithvaadin.entity.Category;
-import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Div;

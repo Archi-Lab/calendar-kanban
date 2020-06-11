@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @XmlRootElement
@@ -12,8 +13,7 @@ public class Category {
 
 
     @Id
-    @GeneratedValue
-    private Long id;
+    private UUID id = UUID.randomUUID();
 
     private String beschreibung;
 
