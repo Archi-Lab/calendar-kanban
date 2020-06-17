@@ -1,9 +1,8 @@
 package xmlexport;
 
 
-import com.example.crudwithvaadin.entity.Category;
-import com.example.crudwithvaadin.entity.Task;
-import com.example.crudwithvaadin.TaskList;
+import canban.entity.Category;
+import canban.entity.Task;
 import com.vaadin.flow.component.upload.receivers.FileData;
 
 import java.io.*;
@@ -37,9 +36,7 @@ public class JaxbConverter
                 categoryList1.add(category);
             }
             marshal(taskList1,categoryList1,file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JAXBException e) {
+        } catch (IOException | JAXBException e) {
             e.printStackTrace();
         }
         return file.getAbsolutePath();

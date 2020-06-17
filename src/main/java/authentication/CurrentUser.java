@@ -1,6 +1,6 @@
 package authentication;
 
-import com.example.crudwithvaadin.entity.User;
+import canban.entity.User;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinService;
 
@@ -47,8 +47,7 @@ public final class CurrentUser {
         if(value==null){
             return null;
         }
-        User currentUser = (User) value;
-            return currentUser;
+        return (User) value;
     }
 
     /**

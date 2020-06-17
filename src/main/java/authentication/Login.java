@@ -1,8 +1,8 @@
 package authentication;
 
 
-import com.example.crudwithvaadin.entity.User;
-import com.example.crudwithvaadin.repository.UserRepository;
+import canban.entity.User;
+import canban.repository.UserRepository;
 
 import java.io.Serializable;
 
@@ -15,12 +15,9 @@ public class Login implements Serializable {
             User returnUser = userRepository.findByUsernameEqualsAndPasswordEquals(user,password);
             if(returnUser!=null){
                 return returnUser;
-            }else{
-                return null;
             }
-        }else{
-            return null;
         }
+            return null;
     }
 
     public UserRepository getUserRepository() {

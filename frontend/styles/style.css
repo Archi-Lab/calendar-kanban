@@ -1,20 +1,8 @@
 vaadin-grid-cell-content {
-    /*height: 75px;
-    text-align: center;
-    vertical-align: middle;
-    line-height: 75px;*/
     text-align: center;
 }
 input{
     color: rebeccapurple;
-}
-
-.style-Freizeit{
-    background: forestgreen;
-}
-
-.style-Bachelor{
-    background: red;
 }
 
 .columnitem label{

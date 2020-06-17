@@ -1,7 +1,7 @@
 package authentication;
 
-import com.example.crudwithvaadin.entity.User;
-import com.example.crudwithvaadin.repository.UserRepository;
+import canban.entity.User;
+import canban.repository.UserRepository;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinSession;
 

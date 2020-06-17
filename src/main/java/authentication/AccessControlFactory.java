@@ -1,6 +1,6 @@
 package authentication;
 
-import com.example.crudwithvaadin.repository.UserRepository;
+import canban.repository.UserRepository;
 
 public class AccessControlFactory {
     private static final AccessControlFactory INSTANCE = new AccessControlFactory();
