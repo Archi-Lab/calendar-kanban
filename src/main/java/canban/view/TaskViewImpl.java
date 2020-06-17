@@ -72,9 +72,9 @@ public class TaskViewImpl extends VerticalLayout implements TaskView {
     private boolean isInit = false;
     private boolean isASC = true;
 
-    public TaskViewImpl(TaskRepository repo, CategoryRepository categoryRepository, UserRepository userRepository) {
+    public TaskViewImpl(TaskRepository taskRepository, CategoryRepository categoryRepository, UserRepository userRepository) {
         if (CurrentUser.getRole() != null){
-            this.controller = new TaskViewController(this,repo,categoryRepository,userRepository);
+            this.controller = new TaskViewController(this,taskRepository,categoryRepository,userRepository);
             this.controller.onEnter();
         }
     }
