@@ -9,6 +9,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import canban.repository.CategoryRepository;
@@ -22,7 +23,7 @@ public class CategoryForm extends Div {
     private CategoryRepository categoryRepository;
 
     private TextField categoryName = new TextField("Title");
-    private ComboBox<Object> colorBox;
+    private ComboBox colorBox;
     private Icon icon = VaadinIcon.CIRCLE.create();
 
     private Button save = new Button("Save");
@@ -43,6 +44,10 @@ public class CategoryForm extends Div {
         add(content);
         save.setWidth("100%");
         save.addClickListener(e -> {
+            if (categoryName.getValue().trim().length()==0||!(colorBox.getValue() instanceof Color)){
+                new Notification("Werte nicht komplett befüllt", 2000).open();
+                return;
+            }
             this.setVisible(false);
             if(category==null) {
                 category=new Category();
@@ -89,6 +94,8 @@ public class CategoryForm extends Div {
                 icon.setColor(hex);
             }
         });
+        categoryName.setRequired(true);
+        colorBox.setRequired(true);
         content.add(categoryName,colorBox,icon,save,abort);
     }
 

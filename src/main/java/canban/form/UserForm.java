@@ -5,6 +5,7 @@ import canban.view.AdminView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
@@ -37,18 +38,26 @@ public class UserForm extends Div {
         add(content);
         save.setWidth("100%");
         save.addClickListener(e->{
+            if (!passwordField.getValue().equals(repeatPasswordField.getValue())){
+                new Notification("Passwörter stimmen nicht überein", 2000).open();
+                return;
+            }
             createUser();
-            this.setVisible(false);
-            this.adminView.refreshGrid();
         });
         abort.addClickListener(e-> this.setVisible(false));
         abort.setWidth("100%");
         box.setItems(User.Rolle.values());
-
+        username.setRequired(true);
+        passwordField.setRequired(true);
+        repeatPasswordField.setRequired(true);
         content.add(username,passwordField,repeatPasswordField,box,save,abort);
     }
 
     private void createUser() {
+        if(passwordField.getValue().trim().length()==0||repeatPasswordField.getValue().trim().length()==0||username.getValue().trim().length()==0){
+            new Notification("Werte nicht komplett befüllt", 2000).open();
+            return;
+        }
         if(user ==null) {
             user = new User();
         }
@@ -56,6 +65,8 @@ public class UserForm extends Div {
         user.setPassword(passwordField.getValue());
         user.setRolle((User.Rolle) box.getValue());
         this.userRepository.save(user);
+        this.setVisible(false);
+        this.adminView.refreshGrid();
     }
 
     public void fillLayout(User user){

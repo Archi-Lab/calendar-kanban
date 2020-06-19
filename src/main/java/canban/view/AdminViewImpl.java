@@ -5,6 +5,7 @@ import canban.entity.Task;
 import canban.entity.User;
 import canban.form.UserForm;
 import canban.repository.TaskRepository;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import xmlexport.TaskList;
 import canban.controller.AdminViewController;
 import canban.repository.CategoryRepository;
@@ -102,15 +103,16 @@ public class AdminViewImpl extends VerticalLayout implements AdminView {
                     ComboBox<User> comboBox = new ComboBox<>();
                     comboBox.setItems(this.controller.findAllUser());
                     comboBox.setItemLabelGenerator((ItemLabelGenerator<User>) User::getName);
+                    Checkbox deleteOldTasks = new Checkbox("Delete other tasks?");
                     dialog.setCloseOnEsc(false);
                     dialog.setCloseOnOutsideClick(false);
                     Button confirmButton = new Button("Import", event -> {
-                        this.controller.importFile(taskList,comboBox.getValue());
+                        this.controller.importFile(taskList,comboBox.getValue(),deleteOldTasks.getValue());
                         dialog.close();
                     });
                     Button cancelButton = new Button("Cancel", event -> dialog.close());
                     Label dialogLabel=new Label("Who do you want to import the tasks for?");
-                    VerticalLayout layout = new VerticalLayout(dialogLabel,comboBox,new HorizontalLayout(confirmButton,cancelButton));
+                    VerticalLayout layout = new VerticalLayout(dialogLabel,comboBox,deleteOldTasks,new HorizontalLayout(confirmButton,cancelButton));
                     dialog.add(layout);
                     dialog.open();
                 } catch (JAXBException jaxbException) {

@@ -215,12 +215,31 @@ public class SettingsViewImpl extends VerticalLayout implements SettingsView {
         importData.setAcceptedFileTypes("text/xml");
         importData.addSucceededListener(e->{
             if(e.getSource().getReceiver() instanceof MemoryBuffer){
-                try {
-                    this.controller.importFileUploaded(((MemoryBuffer) e.getSource().getReceiver()));
-                } catch (JAXBException jaxbException) {
-                    jaxbException.printStackTrace();
-                    new Notification("Hochladen fehgeschlagen", 2000).open();
-                }
+                    Dialog dialog = new Dialog();
+                    dialog.setCloseOnEsc(false);
+                    dialog.setCloseOnOutsideClick(false);
+                    Button confirmButton = new Button("Yes", event -> {
+                        try {
+                            this.controller.importFileUploaded(((MemoryBuffer) e.getSource().getReceiver()),true);
+                        } catch (JAXBException jaxbException) {
+                            jaxbException.printStackTrace();
+                            new Notification("Hochladen fehgeschlagen", 2000).open();
+                        }
+                        dialog.close();
+                    });
+                    Button cancelButton = new Button("No", event -> {
+                        try {
+                            this.controller.importFileUploaded(((MemoryBuffer) e.getSource().getReceiver()),false);
+                        } catch (JAXBException jaxbException) {
+                            jaxbException.printStackTrace();
+                            new Notification("Hochladen fehgeschlagen", 2000).open();
+                        }
+                        dialog.close();
+                    });
+                    Label dialogLabel=new Label("Do you want to delete other Tasks?");
+                    VerticalLayout layout = new VerticalLayout(dialogLabel,new HorizontalLayout(confirmButton,cancelButton));
+                    dialog.add(layout);
+                    dialog.open();
             }
         });
 

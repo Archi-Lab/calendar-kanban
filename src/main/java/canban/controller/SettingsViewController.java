@@ -41,16 +41,22 @@ public class SettingsViewController {
         this.view=view;
     }
 
-    public void importFileUploaded(MemoryBuffer receiver) throws JAXBException {
+    public void importFileUploaded(MemoryBuffer receiver, boolean deleteOld) throws JAXBException {
         TaskList taskList = JaxbConverter.unmarshal(receiver.getFileData());
-        importFile(taskList);
+        importFile(taskList,deleteOld);
     }
 
-    private void importFile(TaskList taskList) {
+    private void importFile(TaskList taskList, boolean deleteOld) {
         if(taskList==null){
             new Notification("Hochladen fehgeschlagen", 2000).open();
             return;
         }
+        if(deleteOld){
+            taskRepository.deleteAllByUser(CurrentUser.getRole());
+            categoryRepository.deleteAllByOwner(CurrentUser.getRole());
+        }
+
+
         List<Category> userCategoryList = categoryRepository.findByOwner(CurrentUser.getRole());
         List<Category> userCategoryListFromImport = taskList.getListCategory();
         for (Category cImport : userCategoryListFromImport){

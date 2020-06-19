@@ -69,7 +69,7 @@ public class GoogleCalendarConnector {
                 .setAccessType("offline")
                 .build();
         LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-        return new SimpleAuthorizationCodeInstalledApp(flow, receiver).authorize(CurrentUser.getRole().getName()+CurrentUser.getRole().getId());
+        return new SimpleAuthorizationCodeInstalledApp(flow, receiver).authorize(CurrentUser.getRole().getName()+CurrentUser.getRole().getId().toString());
     }
 
     public static List<Event> connect(UserRepository userRepository) throws IOException, GeneralSecurityException {

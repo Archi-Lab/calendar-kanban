@@ -166,8 +166,8 @@ public class User {
         return priorityHeightSettings;
     }
 
-    public String getId() {
-        return id.toString();
+    public UUID getId() {
+        return id;
     }
 
     public enum Rolle{

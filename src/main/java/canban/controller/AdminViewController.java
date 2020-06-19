@@ -15,7 +15,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class AdminViewController {
@@ -66,11 +68,16 @@ public class AdminViewController {
         this.taskRepository.deleteAllByColumnAndDoneDateBefore(done,value);
     }
 
-    public void importFile(TaskList taskList, User user) {
+    public void importFile(TaskList taskList, User user, Boolean deleteOld) {
         if(taskList==null){
             new Notification("Hochladen fehgeschlagen", 2000).open();
             return;
         }
+        if(deleteOld){
+            taskRepository.deleteAllByUser(user);
+            categoryRepository.deleteAllByOwner(user);
+        }
+
         List<Category> userCategoryList = categoryRepository.findByOwner(user);
         List<Category> userCategoryListFromImport = taskList.getListCategory();
         for (Category cImport : userCategoryListFromImport){
