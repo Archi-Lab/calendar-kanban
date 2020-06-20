@@ -38,12 +38,11 @@ public class AdminViewImpl extends VerticalLayout implements AdminView {
     private Button back = new Button();
     private Button createNew = new Button("Create user");
     private Button deleteOldTask = new Button("Delete old tasks");
-    private Button importTask = new Button("Delete old tasks");
     private UserForm userForm;
     private AdminViewController controller;
 
     public AdminViewImpl(UserRepository userRepository, TaskRepository taskRepository,CategoryRepository categoryRepository){
-        if(CurrentUser.getRole()!=null&&CurrentUser.getRole().getRolle().equals(User.Rolle.ADMIN)){
+        if(CurrentUser.getUser()!=null&&CurrentUser.getUser().getRolle().equals(User.Rolle.ADMIN)){
             this.userForm=new UserForm(this,userRepository);
             controller = new AdminViewController(this,userRepository,taskRepository,categoryRepository);
             controller.onEnter();
@@ -63,7 +62,7 @@ public class AdminViewImpl extends VerticalLayout implements AdminView {
 
     @Override
     public void buildLayout() {
-        this.add(new Label("Username: "+CurrentUser.getRole().getName()));
+        this.add(new Label("Username: "+CurrentUser.getUser().getName()));
         this.userGrid
                 .addColumn(User::getName)
                 .setHeader("Username")
@@ -85,8 +84,8 @@ public class AdminViewImpl extends VerticalLayout implements AdminView {
         this.userGrid.setWidth("100%");
         this.userGrid.setItems(this.controller.findAllUser());
 
-        Dialog dialog2 = generateConfirmDialog();
-        this.deleteOldTask.addClickListener(e-> dialog2.open());
+        Dialog deleteOldTaskDialog = generateConfirmDialog();
+        this.deleteOldTask.addClickListener(e-> deleteOldTaskDialog.open());
 
         back.setIcon(VaadinIcon.ARROW_BACKWARD.create());
 
@@ -143,19 +142,19 @@ public class AdminViewImpl extends VerticalLayout implements AdminView {
         retButton.addClassName("deleteBtn");
         retButton.setIcon(VaadinIcon.TRASH.create());
 
-        Dialog dialog = new Dialog();
-        dialog.setCloseOnEsc(false);
-        dialog.setCloseOnOutsideClick(false);
+        Dialog deleteUserDialog = new Dialog();
+        deleteUserDialog.setCloseOnEsc(false);
+        deleteUserDialog.setCloseOnOutsideClick(false);
         Button confirmButton = new Button("Confirm", event -> {
             this.controller.deleteUserClicked(user);
-            dialog.close();
+            deleteUserDialog.close();
         });
         confirmButton.addClassName("deleteBtn");
-        Button cancelButton = new Button("Cancel", event -> dialog.close());
+        Button cancelButton = new Button("Cancel", event -> deleteUserDialog.close());
         Label dialogLabel=new Label("Do you want to delete the user \""+user.getName()+"\"?");
         VerticalLayout layout = new VerticalLayout(dialogLabel,new HorizontalLayout(confirmButton,cancelButton));
-        dialog.add(layout);
-        retButton.addClickListener(e-> dialog.open());
+        deleteUserDialog.add(layout);
+        retButton.addClickListener(e-> deleteUserDialog.open());
 
         return retButton;
     }
@@ -174,7 +173,7 @@ public class AdminViewImpl extends VerticalLayout implements AdminView {
         dialog.setCloseOnEsc(false);
         dialog.setCloseOnOutsideClick(false);
         Button confirmButton = new Button("Confirm", event -> {
-            this.controller.deleteTaskOldTaskClicked(Task.Priority.DONE, datePicker.getValue());
+            this.controller.deleteOldTasksClicked(Task.Priority.DONE, datePicker.getValue());
             dialog.close();
             new Notification("Nachrichten wurden gelöscht", 2000).open();
         });

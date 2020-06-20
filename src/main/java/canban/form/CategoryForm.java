@@ -19,7 +19,7 @@ import java.awt.*;
 
 public class CategoryForm extends Div {
 
-    private SettingsView settingsView;
+    private SettingsView view;
     private CategoryRepository categoryRepository;
 
     private TextField categoryName = new TextField("Title");
@@ -31,8 +31,8 @@ public class CategoryForm extends Div {
 
     private Category category = null;
 
-    public CategoryForm(SettingsView settingsView, CategoryRepository categoryRepository) {
-        this.settingsView = settingsView;
+    public CategoryForm(SettingsView view, CategoryRepository categoryRepository) {
+        this.view = view;
         this.categoryRepository = categoryRepository;
         buildLayout();
     }
@@ -51,7 +51,7 @@ public class CategoryForm extends Div {
             this.setVisible(false);
             if(category==null) {
                 category=new Category();
-                category.setOwner(CurrentUser.getRole());
+                category.setOwner(CurrentUser.getUser());
             }
             this.category.setBeschreibung(categoryName.getValue());
             String hex;
@@ -66,7 +66,7 @@ public class CategoryForm extends Div {
             }
             this.category.setColor(hex);
             this.categoryRepository.save(category);
-            this.settingsView.refreshGrid();
+            this.view.refreshGrid();
         });
         abort.addClickListener(e -> this.setVisible(false));
         abort.setWidth("100%");

@@ -41,7 +41,7 @@ public final class CurrentUser {
             return currentUser;
         }
     }
-    public static User getRole() {
+    public static User getUser() {
         Object value = getCurrentRequest().getWrappedSession()
                 .getAttribute(CURRENT_USERROLE_SESSION_ATTRIBUTE_KEY);
         if(value==null){

@@ -40,25 +40,8 @@ private UserRepository userRepository;
     }
 
     @Override
-    public int isUserInRole(String role) {
-        if ("admin".equals(role)) {
-            // Only the "admin" user is in the "admin" role
-            return 1;
-//            return getPrincipalName().equals("admin");
-        }
-
-        // All users are in all non-admin roles
-        return 0;
-    }
-
-    @Override
-    public String getPrincipalName() {
-        return CurrentUser.get();
-    }
-
-    @Override
-    public User getRole() {
-        return CurrentUser.getRole();
+    public User getUser() {
+        return CurrentUser.getUser();
     }
 
     @Override

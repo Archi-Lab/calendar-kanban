@@ -28,19 +28,23 @@ public class TaskForm extends Div {
     private ComboBox<Category> categoryBox = new ComboBox("Category");
     private ComboBox<Task.Priority> columnBox = new ComboBox("Column");
     private ComboBox<Task.Size> sizeBox = new ComboBox("Size");
-    private DatePicker datum = new DatePicker("Deadline(Optional)");
-    private TaskRepository repository;
+    private DatePicker deadlineField = new DatePicker("Deadline(Optional)");
+    private TaskRepository taskRepository;
     private CategoryRepository categoryRepository;
     private Task task = null;
 
     public TaskForm(TaskRepository repo, CategoryRepository categoryRepository, TaskViewImpl view){
-        this.repository=repo;
+        this.taskRepository =repo;
         this.view=view;
         this.categoryRepository=categoryRepository;
+        this.buildLayout();
+    }
+
+    private void buildLayout() {
         this.sizeBox.setItems(Task.Size.values());
         this.columnBox.setItems(Task.Priority.values());
         this.columnBox.setAllowCustomValue(false);
-        this.categoryBox.setItems(categoryRepository.findByOwner(CurrentUser.getRole()));
+        this.categoryBox.setItems(categoryRepository.findByOwner(CurrentUser.getUser()));
         this.categoryBox.setItemLabelGenerator(new ItemLabelGenerator() {
             @Override
             public String apply(Object o) {
@@ -72,7 +76,7 @@ public class TaskForm extends Div {
         delete.addClassName("deleteBtn");
         delete.setIcon(VaadinIcon.TRASH.create());
         delete.addClickShortcut(Key.KEY_D, KeyModifier.ALT);
-        content.add(title,sizeBox, columnBox,categoryBox,datum, save, abort, delete);
+        content.add(title,sizeBox, columnBox,categoryBox, deadlineField, save, abort, delete);
     }
 
     private void saveTaskEvent(ClickEvent<Button> buttonClickEvent) {
@@ -82,23 +86,23 @@ public class TaskForm extends Div {
         }
         if(task!=null){
             task.setTitle(title.getValue());
-            task.setDueDate(datum.getValue());
+            task.setDueDate(deadlineField.getValue());
             task.setCreationDate(LocalDate.now());
             task.setColumn(columnBox.getValue());
             task.setSize(sizeBox.getValue());
             task.setCategory((Category) categoryBox.getValue());
-            repository.save(task);
+            taskRepository.save(task);
             this.view.refreshGridData();
         }else{
             Task newTask = new Task();
             newTask.setTitle(title.getValue());
-            newTask.setDueDate(datum.getValue());
+            newTask.setDueDate(deadlineField.getValue());
             newTask.setCreationDate(LocalDate.now());
             newTask.setColumn(columnBox.getValue());
             newTask.setCategory((Category) categoryBox.getValue());
-            newTask.setUser(CurrentUser.getRole());
+            newTask.setUser(CurrentUser.getUser());
             newTask.setSize(sizeBox.getValue());
-            repository.save(newTask);
+            taskRepository.save(newTask);
             this.view.refreshGridData();
         }
         task=null;
@@ -107,7 +111,7 @@ public class TaskForm extends Div {
 
     private void deleteTask() {
         if(task!=null){
-            repository.delete(task);
+            taskRepository.delete(task);
             this.view.refreshGridData();
             task=null;
         }
@@ -115,17 +119,17 @@ public class TaskForm extends Div {
     }
 
     public void fillForm(Task task){
-        this.categoryBox.setItems(this.categoryRepository.findByOwner(CurrentUser.getRole()));
+        this.categoryBox.setItems(this.categoryRepository.findByOwner(CurrentUser.getUser()));
         this.task=task;
         if(task!=null) {
             title.setValue(task.getTitle());
-            datum.setValue(task.getDueDate());
+            deadlineField.setValue(task.getDueDate());
             columnBox.setValue(task.getColumn());
             sizeBox.setValue(task.getSize());
             categoryBox.setValue(task.getCategory());
         }else{
             title.setValue("");
-            datum.setValue(null);
+            deadlineField.setValue(null);
             this.sizeBox.setValue(Task.Size.M);
             categoryBox.setValue(null);
             this.columnBox.setValue(Task.Priority.TODAY);

@@ -45,6 +45,7 @@ public class AdminViewController {
 
     public void deleteUserClicked(User user) {
         this.taskRepository.deleteAllByUser(user);
+        this.categoryRepository.deleteAllByOwner(user);
         this.userRepository.delete(user);
         this.view.refreshGrid();
     }
@@ -64,7 +65,7 @@ public class AdminViewController {
         return null;
     }
 
-    public void deleteTaskOldTaskClicked(Task.Priority done, LocalDate value) {
+    public void deleteOldTasksClicked(Task.Priority done, LocalDate value) {
         this.taskRepository.deleteAllByColumnAndDoneDateBefore(done,value);
     }
 
@@ -85,6 +86,7 @@ public class AdminViewController {
             for (Category cUser: userCategoryList ){
                 if(cImport.getBeschreibung().toUpperCase().equals(cUser.getBeschreibung().toUpperCase())){
                     exist=true;
+                    userCategoryList.remove(cUser);
                     break;
                 }
             }

@@ -42,6 +42,6 @@ public class TaskViewController {
     }
 
     public Collection<?> getAllCategorysForUser() {
-        return categoryRepository.findByOwner(CurrentUser.getRole());
+        return categoryRepository.findByOwner(CurrentUser.getUser());
     }
 }

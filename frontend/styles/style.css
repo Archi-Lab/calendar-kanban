@@ -54,3 +54,19 @@ input{
     --overlay-box-shadow: 0 0 3px 2px #e6fce6;
 
 }
+
+@media only screen and (max-width: 1210px) {
+
+    .mobileItem{
+        visibility: hidden;
+        width: 0px;
+    }
+}
+
+@media only screen and (max-width: 1090px) {
+
+    .mobileItemSmall{
+        visibility: hidden;
+        width: 0px;
+    }
+}

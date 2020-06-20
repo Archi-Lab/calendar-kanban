@@ -40,12 +40,12 @@ import java.util.Optional;
 public class TaskViewImpl extends VerticalLayout implements TaskView {
 
     //Components
-    private final TextField input = new TextField("Search");
+    private final TextField searchField = new TextField("Search");
     private final ComboBox<Object> categoryBox = new ComboBox<>("Category");
     private final ComboBox<ColumnGrid.Order> orderBox = new ComboBox<>("Sort");
     private final Button creatTermin = new Button("Task");
     private final Button settingsBtn = new Button();
-    private final Button ascdescButton = new Button();
+    private final Button ascdescBtn = new Button();
     private final Button adminView = new Button("Adminmask");
     private final Checkbox multiselectBox = new Checkbox("Multiselect");
     private final Checkbox doneShow = new Checkbox("Show Done");
@@ -63,7 +63,6 @@ public class TaskViewImpl extends VerticalLayout implements TaskView {
     //Forms
     private TaskForm form;
 
-
     //Other Variables
     private ColumnGrid<Task> dragSource = null;
     private List<Task> draggedItems = null;
@@ -73,7 +72,7 @@ public class TaskViewImpl extends VerticalLayout implements TaskView {
     private boolean isASC = true;
 
     public TaskViewImpl(TaskRepository taskRepository, CategoryRepository categoryRepository, UserRepository userRepository) {
-        if (CurrentUser.getRole() != null){
+        if (CurrentUser.getUser() != null){
             this.controller = new TaskViewController(this,taskRepository,categoryRepository,userRepository);
             this.controller.onEnter();
         }
@@ -99,8 +98,8 @@ public class TaskViewImpl extends VerticalLayout implements TaskView {
             draggedItems.forEach(e-> e.setColumn(targetGrid.getPriority()));
             this.controller.saveTasks(draggedItems);
 
-            dragSource.refreshContainer(category,input.getValue(), this.orderBox.getValue(),isASC);
-            targetGrid.refreshContainer(category,input.getValue(), this.orderBox.getValue(),isASC);
+            dragSource.refreshContainer(category, searchField.getValue(), this.orderBox.getValue(),isASC);
+            targetGrid.refreshContainer(category, searchField.getValue(), this.orderBox.getValue(),isASC);
         };
 
         for (ColumnGrid<Task> grid :gridList){
@@ -111,10 +110,10 @@ public class TaskViewImpl extends VerticalLayout implements TaskView {
         }
         this.multiselectBox.addValueChangeListener(e-> gridList.forEach(grid-> grid.setSelectionMode(e.getValue()?Grid.SelectionMode.MULTI: Grid.SelectionMode.SINGLE)));
 
-        this.doneShow.addValueChangeListener(e-> this.donenGridThisWeek.setVisibleItems(e.getValue(),this.category,this.input.getValue(), this.orderBox.getValue(),isASC));
+        this.doneShow.addValueChangeListener(e-> this.donenGridThisWeek.setVisibleItems(e.getValue(),this.category,this.searchField.getValue(), this.orderBox.getValue(),isASC));
 
-        this.input.setValueChangeMode(ValueChangeMode.LAZY);
-        this.input.addValueChangeListener(e-> refreshGridData());
+        this.searchField.setValueChangeMode(ValueChangeMode.LAZY);
+        this.searchField.addValueChangeListener(e-> refreshGridData());
 
         this.creatTermin.addClickListener(e-> this.controller.taskClicked(null));
         this.creatTermin.addClickShortcut(Key.KEY_N,KeyModifier.ALT);
@@ -139,13 +138,13 @@ public class TaskViewImpl extends VerticalLayout implements TaskView {
             refreshGridData();
         });
 
-        this.ascdescButton.addClickListener(e->{
+        this.ascdescBtn.addClickListener(e->{
            if(isASC){
                isASC=false;
-               this.ascdescButton.setIcon(VaadinIcon.ARROW_DOWN.create());
+               this.ascdescBtn.setIcon(VaadinIcon.ARROW_DOWN.create());
            }else{
                isASC=true;
-               this.ascdescButton.setIcon(VaadinIcon.ARROW_UP.create());
+               this.ascdescBtn.setIcon(VaadinIcon.ARROW_UP.create());
            }
            refreshGridData();
         });
@@ -160,13 +159,13 @@ public class TaskViewImpl extends VerticalLayout implements TaskView {
 
     @Override
     public void buildLayout(TaskRepository taskRepository, CategoryRepository categoryRepository, UserRepository userRepository) {
-        this.add(new Label("Username: "+CurrentUser.getRole().getName()));
+        this.add(new Label("Username: "+CurrentUser.getUser().getName()));
 
         this.form = new TaskForm(taskRepository, categoryRepository, this);
         form.setVisible(false);
 
         laterGridToday = new ColumnGrid<Task>("Later", Task.class, Task.Priority.LATER, taskRepository, this,userRepository);
-        nextNweekGridTomorrow = new ColumnGrid<Task>("Next " + CurrentUser.getRole().getNweeksValue() + " Weeks", Task.class, Task.Priority.NEXTNWEEK, taskRepository, this,userRepository);
+        nextNweekGridTomorrow = new ColumnGrid<Task>("Next " + CurrentUser.getUser().getNweeksValue() + " Weeks", Task.class, Task.Priority.NEXTNWEEK, taskRepository, this,userRepository);
         nextWeekGridThisWeek = new ColumnGrid<Task>("Next Week", Task.class, Task.Priority.NEXTWEEK, taskRepository, this,userRepository);
         currentWeekGridThisWeek = new ColumnGrid<Task>("Current Week", Task.class, Task.Priority.CURRENTWEEK, taskRepository, this,userRepository);
         todayGridThisWeek = new ColumnGrid<Task>("Today", Task.class, Task.Priority.TODAY, taskRepository, this,userRepository);
@@ -180,7 +179,7 @@ public class TaskViewImpl extends VerticalLayout implements TaskView {
         settingsBtn.setIcon(VaadinIcon.COG.create());
         settingsBtn.setClassName("btnLayout");
 
-        this.input.setWidth("130px");
+        this.searchField.setWidth("130px");
 
         List<Object> list = new ArrayList<>();
         list.add("Alle");
@@ -196,13 +195,17 @@ public class TaskViewImpl extends VerticalLayout implements TaskView {
             return "";
         });
 
-        ascdescButton.setIcon(VaadinIcon.ARROW_UP.create());
-        ascdescButton.getStyle().set("margin-left","0px");
+        ascdescBtn.setIcon(VaadinIcon.ARROW_UP.create());
+        ascdescBtn.getStyle().set("margin-left","0px");
 
         categoryBox.setWidth("170px");
         doneShow.setValue(true);
+        doneShow.addClassName("mobileItemSmall");
         orderBox.setItems(ColumnGrid.Order.values());
         orderBox.setAllowCustomValue(false);
+        orderBox.setWidth("120px");
+
+        multiselectBox.addClassName("mobileItem");
 
         Button logoutButton = new Button("Logout",
                 VaadinIcon.SIGN_OUT.create());
@@ -212,9 +215,9 @@ public class TaskViewImpl extends VerticalLayout implements TaskView {
         HorizontalLayout headLayout = new HorizontalLayout();
         headLayout.addClassName("centerLayout");
         headLayout.getStyle().set("margin-top","0px");
-        headLayout.add(settingsBtn,adminView,input,categoryBox,orderBox,ascdescButton,multiselectBox,doneShow,creatTermin,logoutButton);
+        headLayout.add(settingsBtn,adminView, searchField,categoryBox,orderBox, ascdescBtn,multiselectBox,doneShow,creatTermin,logoutButton);
 
-        if(CurrentUser.getRole()!=null&&!CurrentUser.getRole().getRolle().equals(User.Rolle.ADMIN)){
+        if(CurrentUser.getUser()!=null&&!CurrentUser.getUser().getRolle().equals(User.Rolle.ADMIN)){
             this.adminView.setVisible(false);
         }
 
@@ -237,7 +240,7 @@ public class TaskViewImpl extends VerticalLayout implements TaskView {
     @Override
     public void refreshGridData(){
         for (ColumnGrid<Task> grid :gridList){
-            grid.refreshContainer(this.category,this.input.getValue(), this.orderBox.getValue(),this.isASC);
+            grid.refreshContainer(this.category,this.searchField.getValue(), this.orderBox.getValue(),this.isASC);
         }
     }
 

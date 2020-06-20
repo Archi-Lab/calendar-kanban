@@ -59,24 +59,24 @@ public class SettingsViewImpl extends VerticalLayout implements SettingsView {
 
     private final Map<Tab, Component> tabsToPages = new HashMap<>();
 
-    private Tab tab1 = new Tab("Categorys");
-    private Tab tab2 = new Tab("Other settings");
-    private Tab tab3 = new Tab("Size settings");
-    private Tab tab4 = new Tab("Worktime");
-    private Tab tab5 = new Tab("Google Calendar");
-    private Tab tab6 = new Tab("Column Settings");
+    private Tab categoryTab = new Tab("Categorys");
+    private Tab otherSettingsTab = new Tab("Other settings");
+    private Tab sizeSettinsTab = new Tab("Size settings");
+    private Tab worktimeTab = new Tab("Worktime");
+    private Tab googleTab = new Tab("Google Calendar");
+    private Tab columnSettingsTab = new Tab("Column Settings");
 
-    private Div page1 = new Div();
-    private Div page2 = new Div();
-    private Div page3 = new Div();
-    private Div page4 = new Div();
-    private Div page5 = new Div();
-    private Div page6 = new Div();
+    private Div categoryPage = new Div();
+    private Div otherSettingsPage = new Div();
+    private Div sizeSettingsPage = new Div();
+    private Div worktimePage = new Div();
+    private Div googlePage = new Div();
+    private Div columnSettinsPage = new Div();
     private Tabs tabs;
 
     public SettingsViewImpl(CategoryRepository categoryRepository, UserRepository userRepository, TaskRepository taskRepository){
-        if(CurrentUser.getRole()!=null) {
-            this.add(new Label("Username: "+CurrentUser.getRole().getName()));
+        if(CurrentUser.getUser()!=null) {
+            this.add(new Label("Username: "+CurrentUser.getUser().getName()));
             this.categoryForm = new CategoryForm(this, categoryRepository);
             this.controller=new SettingsViewController(taskRepository,categoryRepository,userRepository,this);
             this.controller.onEnter();
@@ -122,7 +122,7 @@ public class SettingsViewImpl extends VerticalLayout implements SettingsView {
         deleteOldTaskDialog.setCloseOnEsc(false);
         deleteOldTaskDialog.setCloseOnOutsideClick(false);
         Button confirmButton = new Button("Confirm", event -> {
-            this.controller.deletTasks(CurrentUser.getRole(), Task.Priority.DONE, datePicker.getValue());
+            this.controller.deletOldTasks(datePicker.getValue());
             deleteOldTaskDialog.close();
         });
         Button cancelButton = new Button("Cancel", event -> deleteOldTaskDialog.close());
@@ -132,7 +132,7 @@ public class SettingsViewImpl extends VerticalLayout implements SettingsView {
 
         this.deleteOldTask.addClickListener(e-> deleteOldTaskDialog.open());
 
-        Set<Component> pagesShown = Stream.of(page1)
+        Set<Component> pagesShown = Stream.of(categoryPage)
                 .collect(Collectors.toSet());
         tabs.addSelectedChangeListener(event -> {
             pagesShown.forEach(page -> page.setVisible(false));
@@ -146,11 +146,11 @@ public class SettingsViewImpl extends VerticalLayout implements SettingsView {
     @Override
     public void buildLayout() {
         distractionFactorField = new TextField("Distraction Factor (%)");
-        distractionFactorField.setValue(CurrentUser.getRole().getDistractionFactor()+"");
+        distractionFactorField.setValue(CurrentUser.getUser().getDistractionFactor()+"");
         distractionFactorField.setValueChangeMode(ValueChangeMode.LAZY);
 
         nWeeksField = new TextField("Week number");
-        nWeeksField.setValue(CurrentUser.getRole().getNweeksValue()+"");
+        nWeeksField.setValue(CurrentUser.getUser().getNweeksValue()+"");
         nWeeksField.setValueChangeMode(ValueChangeMode.LAZY);
 
         categoryGrid=new Grid<>(Category.class,false);
@@ -172,21 +172,21 @@ public class SettingsViewImpl extends VerticalLayout implements SettingsView {
         this.add(categoryForm);
         this.categoryForm.setVisible(false);
 
-        this.configPage1();
-        this.configPage2();
-        this.configPage3();
-        this.configPage4();
-        this.configPage5();
-        this.configPage6();
+        this.configCategoryPage();
+        this.configOtherSettingsPage();
+        this.configSizeSettingsPage();
+        this.configWorktimePage();
+        this.configGooglePage();
+        this.configColumnSettingsPage();
 
-        tabsToPages.put(tab1, page1);
-        tabsToPages.put(tab2, page2);
-        tabsToPages.put(tab3, page3);
-        tabsToPages.put(tab6, page6);
-        tabsToPages.put(tab4, page4);
-        tabsToPages.put(tab5, page5);
-        tabs = new Tabs(tab1, tab2, tab6, tab3, tab4, tab5);
-        Div pages = new Div(page1, page2, page6, page3, page4, page5);
+        tabsToPages.put(categoryTab, categoryPage);
+        tabsToPages.put(otherSettingsTab, otherSettingsPage);
+        tabsToPages.put(sizeSettinsTab, sizeSettingsPage);
+        tabsToPages.put(columnSettingsTab, columnSettinsPage);
+        tabsToPages.put(worktimeTab, worktimePage);
+        tabsToPages.put(googleTab, googlePage);
+        tabs = new Tabs(categoryTab, otherSettingsTab, columnSettingsTab, sizeSettinsTab, worktimeTab, googleTab);
+        Div pages = new Div(categoryPage, otherSettingsPage, columnSettinsPage, sizeSettingsPage, worktimePage, googlePage);
 
         HorizontalLayout headlayout = new HorizontalLayout();
         headlayout.add(backBtn,tabs);
@@ -195,15 +195,15 @@ public class SettingsViewImpl extends VerticalLayout implements SettingsView {
         this.add(headlayout,pages);
     }
 
-    private void configPage1() {
-        page1.add(addCategory);
+    private void configCategoryPage() {
+        categoryPage.add(addCategory);
         HorizontalLayout horizontalLayout = new HorizontalLayout(categoryGrid);
         horizontalLayout.setWidth("750px");
-        page1.add(horizontalLayout);
-        page1.setSizeFull();
+        categoryPage.add(horizontalLayout);
+        categoryPage.setSizeFull();
     }
 
-    private void configPage2() {
+    private void configOtherSettingsPage() {
         Anchor download = new Anchor(new StreamResource("export.xml", () -> this.controller.createResource()), "");
         download.getElement().setAttribute("download", true);
         download.add(new Button("Export",new Icon(VaadinIcon.DOWNLOAD_ALT)));
@@ -250,63 +250,63 @@ public class SettingsViewImpl extends VerticalLayout implements SettingsView {
         horizontalLayout1.add(download);
         horizontalLayout1.add(importData);
         horizontalLayout1.addClassName("centerLayout");
-        page2.add(horizontalLayout1);
-        page2.setSizeFull();
-        page2.setVisible(false);
+        otherSettingsPage.add(horizontalLayout1);
+        otherSettingsPage.setSizeFull();
+        otherSettingsPage.setVisible(false);
     }
 
-    private void configPage3() {
-        page3.add(generateSizeLayout());
-        page3.setSizeFull();
-        page3.setVisible(false);
+    private void configSizeSettingsPage() {
+        sizeSettingsPage.add(generateSizeLayout());
+        sizeSettingsPage.setSizeFull();
+        sizeSettingsPage.setVisible(false);
     }
 
-    private void configPage4() {
-        page4.add(new Label("Daily worktime"));
-        page4.add(generateWeek());
+    private void configWorktimePage() {
+        worktimePage.add(new Label("Daily worktime"));
+        worktimePage.add(generateWeek());
         VerticalLayout breakLayout = new VerticalLayout();
         breakLayout.setHeight("25px");
-        page4.add(breakLayout);
-        page4.add(new Label("Daily blocked hour"));
-        page4.add(generateBlockedWeek());
+        worktimePage.add(breakLayout);
+        worktimePage.add(new Label("Daily blocked hour"));
+        worktimePage.add(generateBlockedWeek());
         VerticalLayout breakLayout2 = new VerticalLayout();
         breakLayout2.setHeight("25px");
-        page4.add(breakLayout2);
-        page4.setSizeFull();
-        page4.setVisible(false);
+        worktimePage.add(breakLayout2);
+        worktimePage.setSizeFull();
+        worktimePage.setVisible(false);
     }
 
-    private void configPage5() {
+    private void configGooglePage() {
         Button btn = new Button("Add google calendar");
         btn.setIcon(VaadinIcon.GOOGLE_PLUS.create());
         btn.addClickListener(e->{
-            if (!CurrentUser.getRole().isConnectGoogle()) {
+            if (!CurrentUser.getUser().isConnectGoogle()) {
                 try {
                     this.controller.googleCalendarConnect();
-                    page5.add(getGoogleEvents());
+                    googlePage.add(getGoogleEvents());
                 } catch (IOException | GeneralSecurityException ioException) {
                     //Logger.getAnonymousLogger().log(Level.ALL,ioException.getMessage());
                     ioException.printStackTrace();
                 }
             }
         });
-        page5.add(btn);
+        googlePage.add(btn);
         Checkbox isConnected = new Checkbox("Connected with Google Calendar");
         isConnected.setEnabled(false);
-        isConnected.setValue(CurrentUser.getRole().isConnectGoogle());
-        page5.add(new VerticalLayout(isConnected));
-        if (CurrentUser.getRole().isConnectGoogle()) {
-            page5.add(getGoogleEvents());
+        isConnected.setValue(CurrentUser.getUser().isConnectGoogle());
+        googlePage.add(new VerticalLayout(isConnected));
+        if (CurrentUser.getUser().isConnectGoogle()) {
+            googlePage.add(getGoogleEvents());
         }
-        page5.setSizeFull();
-        page5.setVisible(false);
+        googlePage.setSizeFull();
+        googlePage.setVisible(false);
     }
 
-    private void configPage6() {
+    private void configColumnSettingsPage() {
         HorizontalLayout horizontalLayout2 = new HorizontalLayout(new Label("30px = +14 Tasks"),new Label("50px = 9-13 Tasks"),new Label("74px = 7-9 Tasks"),new Label("100px = 5-7 Tasks"));
         horizontalLayout2.setMargin(true);
         horizontalLayout2.setSpacing(true);
-        page6.add(horizontalLayout2);
+        columnSettinsPage.add(horizontalLayout2);
         HorizontalLayout horizontalLayout3 = new HorizontalLayout();
         horizontalLayout3.setMargin(true);
         horizontalLayout3.setSpacing(true);
@@ -314,25 +314,25 @@ public class SettingsViewImpl extends VerticalLayout implements SettingsView {
         for(Task.Priority priority: Task.Priority.values()){
             TextField tmp = new TextField(priority.getBezeichnung());
             if(priority.equals(Task.Priority.NEXTNWEEK)){
-                tmp = new TextField(priority.getBezeichnung().replace("$",CurrentUser.getRole().getNweeksValue()+""));
+                tmp = new TextField(priority.getBezeichnung().replace("$",CurrentUser.getUser().getNweeksValue()+""));
             }
             tmp.setWidth("100px");
             tmp.setValueChangeMode(ValueChangeMode.LAZY);
-            tmp.setValue(""+CurrentUser.getRole().getPriorityHeightSettings().get(priority.name()));
+            tmp.setValue(""+CurrentUser.getUser().getPriorityHeightSettings().get(priority.name()));
             tmp.addValueChangeListener(e-> this.controller.setPriorityHeightSettings(priority.name(),Integer.parseInt(e.getValue())));
             horizontalLayout3.add(tmp);
         }
 
-        page6.add(horizontalLayout3);
+        columnSettinsPage.add(horizontalLayout3);
 
-        page6.setSizeFull();
-        page6.setVisible(false);
+        columnSettinsPage.setSizeFull();
+        columnSettinsPage.setVisible(false);
 
     }
 
     private VerticalLayout getGoogleEvents() {
         VerticalLayout verticalLayout = new VerticalLayout();
-        if(CurrentUser.getRole().isConnectGoogle()) {
+        if(CurrentUser.getUser().isConnectGoogle()) {
             try {
                 Collection<Event> eventList = this.controller.googleCalendarConnect();
                 eventList=eventList.stream().filter(event -> event.getTransparency()==null).collect(Collectors.toList());
@@ -347,7 +347,7 @@ public class SettingsViewImpl extends VerticalLayout implements SettingsView {
 
     private Component generateBlockedWeek() {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
-        Map<String,LocalTime> map = CurrentUser.getRole().getBlockedTimeSettings();
+        Map<String,LocalTime> map = CurrentUser.getUser().getBlockedTimeSettings();
 
         for(DayOfWeek day: DayOfWeek.values()){
             TimePicker tmp = new TimePicker(day.name(),map.get(day.name()));
@@ -360,7 +360,7 @@ public class SettingsViewImpl extends VerticalLayout implements SettingsView {
 
     private Component generateWeek() {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
-        Map<String,LocalTime> map = CurrentUser.getRole().getTimeSettings();
+        Map<String,LocalTime> map = CurrentUser.getUser().getTimeSettings();
 
         for(DayOfWeek day: DayOfWeek.values()){
             TimePicker tmp = new TimePicker(day.name(),map.get(day.name()));
@@ -397,7 +397,7 @@ public class SettingsViewImpl extends VerticalLayout implements SettingsView {
             ComboBox<String> sizeUnit = new ComboBox<>("Unit");
             sizeUnit.setItems("Minute(s)","Hour(s)","Day(s) (8h)");
             sizeUnit.setWidth("150px");
-            int value = (CurrentUser.getRole().getSizeSettings().get(size.name()));
+            int value = (CurrentUser.getUser().getSizeSettings().get(size.name()));
             if(value%480==0){
                 sizeUnit.setValue("Day(s) (8h)");
                 sizeValue.setValue((value/480)+"");

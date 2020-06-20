@@ -69,7 +69,7 @@ public class GoogleCalendarConnector {
                 .setAccessType("offline")
                 .build();
         LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-        return new SimpleAuthorizationCodeInstalledApp(flow, receiver).authorize(CurrentUser.getRole().getName()+CurrentUser.getRole().getId().toString());
+        return new SimpleAuthorizationCodeInstalledApp(flow, receiver).authorize(CurrentUser.getUser().getName()+CurrentUser.getUser().getId().toString());
     }
 
     public static List<Event> connect(UserRepository userRepository) throws IOException, GeneralSecurityException {
@@ -84,21 +84,21 @@ public class GoogleCalendarConnector {
                 "CURRENT_USER_SESSION_GOOGLE_EVENTS_TIMESTAMP");
         events_Datestamp = (LocalDate) getCurrentRequest().getWrappedSession().getAttribute(
                 "CURRENT_USER_SESSION_GOOGLE_EVENTS_TIMESTAMP_DATE");
-        if(items==null || events_Timestamp==null || events_Datestamp==null ||LocalTime.now().minusMinutes(2).isAfter(events_Timestamp)||LocalDate.now().isAfter(events_Datestamp)){
+        if(items==null || events_Timestamp==null || events_Datestamp==null ||LocalTime.now().minusMinutes(10).isAfter(events_Timestamp)||LocalDate.now().isAfter(events_Datestamp)){
 
-            CurrentUser.getRole().setConnectGoogle(false);
-            userRepository.save(CurrentUser.getRole());
+            CurrentUser.getUser().setConnectGoogle(false);
+            userRepository.save(CurrentUser.getUser());
             final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
             Calendar service = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
                     .setApplicationName(APPLICATION_NAME)
                     .build();
 
-            CurrentUser.getRole().setConnectGoogle(true);
-            userRepository.save(CurrentUser.getRole());
+            CurrentUser.getUser().setConnectGoogle(true);
+            userRepository.save(CurrentUser.getUser());
 
             DateTime now = new DateTime(System.currentTimeMillis());
 
-            int n = CurrentUser.getRole().getNweeksValue();
+            int n = CurrentUser.getUser().getNweeksValue();
             LocalDate nowN = LocalDate.now().plusWeeks(2);
             TemporalField fieldISON = WeekFields.of(Locale.GERMANY).dayOfWeek();
             //Plus 1 Tag, weil der Zeitstempel 00:00 Uhr setzt

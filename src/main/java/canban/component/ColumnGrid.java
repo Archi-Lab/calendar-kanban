@@ -57,7 +57,7 @@ public class ColumnGrid<T> extends Grid<T> {
 
     private HorizontalLayout generateLabel(T t) {
         HorizontalLayout retLayout = new HorizontalLayout();
-        int height = CurrentUser.getRole().getPriorityHeightSettings().get(this.priority.name());
+        int height = CurrentUser.getUser().getPriorityHeightSettings().get(this.priority.name());
         retLayout.getStyle().set("height",height+"px");
         retLayout.getStyle().set("text-align","center");
         retLayout.getStyle().set("vertical-align","center");
@@ -118,16 +118,16 @@ public class ColumnGrid<T> extends Grid<T> {
         List<T> retList=null;
         if(category==null) {
             if(string.length()>1){
-                retList=((List<T>) repository.findByColumnAndUserAndTitleContainingIgnoreCaseOrderByDoneDate(this.priority, CurrentUser.getRole(),string));
+                retList=((List<T>) repository.findByColumnAndUserAndTitleContainingIgnoreCaseOrderByDoneDate(this.priority, CurrentUser.getUser(),string));
             }else {
-                retList=((List<T>) repository.findByColumnAndUserOrderByDoneDate(this.priority, CurrentUser.getRole()));
+                retList=((List<T>) repository.findByColumnAndUserOrderByDoneDate(this.priority, CurrentUser.getUser()));
             }
         }
         else{
             if(string.length()>1){
-                retList=((List<T>) repository.findByColumnAndCategoryAndUserAndTitleContainingIgnoreCaseOrderByDoneDate(this.priority, category, CurrentUser.getRole(),string));
+                retList=((List<T>) repository.findByColumnAndCategoryAndUserAndTitleContainingIgnoreCaseOrderByDoneDate(this.priority, category, CurrentUser.getUser(),string));
             }else {
-                retList=((List<T>) repository.findByColumnAndCategoryAndUserOrderByDoneDate(this.priority, category, CurrentUser.getRole()));
+                retList=((List<T>) repository.findByColumnAndCategoryAndUserOrderByDoneDate(this.priority, category, CurrentUser.getUser()));
             }
         }
         if(retList!=null) {
@@ -140,8 +140,8 @@ public class ColumnGrid<T> extends Grid<T> {
                             else
                                 return ((Task) o2).getCategory().getBeschreibung().compareTo(((Task) o1).getCategory().getBeschreibung());
                         }else if(order.equals(Order.Size)){
-                            int o1int = CurrentUser.getRole().getSizeSettings().get(((Task) o1).getSize().toString());
-                            int o2int = CurrentUser.getRole().getSizeSettings().get(((Task) o2).getSize().toString());
+                            int o1int = CurrentUser.getUser().getSizeSettings().get(((Task) o1).getSize().toString());
+                            int o2int = CurrentUser.getUser().getSizeSettings().get(((Task) o2).getSize().toString());
                             if(asc)
                                 return o1int-o2int;
                             else
@@ -185,7 +185,7 @@ public class ColumnGrid<T> extends Grid<T> {
 
     private void checkDoneForNextNWeek(List<T> retList) {
         double maxSizeNWeek = 0;
-        int n = CurrentUser.getRole().getNweeksValue();
+        int n = CurrentUser.getUser().getNweeksValue();
         LocalDate nowN = LocalDate.now().plusWeeks(2);
         TemporalField fieldISON = WeekFields.of(Locale.GERMANY).dayOfWeek();
         LocalDate startDateN = nowN.with(fieldISON,1);
@@ -193,12 +193,12 @@ public class ColumnGrid<T> extends Grid<T> {
         int minutesNWeek =0;
         minutesNWeek=this.googleEventCheck(minutesNWeek,startDateN,endDateN);
         for(DayOfWeek day : DayOfWeek.values()){
-            LocalTime timeday = CurrentUser.getRole().getTimeSettings().get(day.toString());
-            LocalTime blcokedtimeday = CurrentUser.getRole().getBlockedTimeSettings().get(day.toString());
+            LocalTime timeday = CurrentUser.getUser().getTimeSettings().get(day.toString());
+            LocalTime blcokedtimeday = CurrentUser.getUser().getBlockedTimeSettings().get(day.toString());
             maxSizeNWeek+= ((timeday.getHour()*60+timeday.getMinute())-(blcokedtimeday.getHour()*60+blcokedtimeday.getMinute()))*n;
         }
         if(maxSizeNWeek-minutesNWeek>0){
-            maxSizeNWeek=(maxSizeNWeek-minutesNWeek)*(((double)(100-CurrentUser.getRole().getDistractionFactor()))/100);
+            maxSizeNWeek=(maxSizeNWeek-minutesNWeek)*(((double)(100-CurrentUser.getUser().getDistractionFactor()))/100);
         }else{
             maxSizeNWeek=(maxSizeNWeek-minutesNWeek);
         }
@@ -214,12 +214,12 @@ public class ColumnGrid<T> extends Grid<T> {
         int minutesNWeek =0;
         minutesNWeek=this.googleEventCheck(minutesNWeek,startDateN,endDate);
         for(DayOfWeek day : DayOfWeek.values()){
-            LocalTime timeday = CurrentUser.getRole().getTimeSettings().get(day.toString());
-            LocalTime blcokedtimeday = CurrentUser.getRole().getBlockedTimeSettings().get(day.toString());
+            LocalTime timeday = CurrentUser.getUser().getTimeSettings().get(day.toString());
+            LocalTime blcokedtimeday = CurrentUser.getUser().getBlockedTimeSettings().get(day.toString());
             maxSizeWeek+= (timeday.getHour()*60+timeday.getMinute())-(blcokedtimeday.getHour()*60+blcokedtimeday.getMinute());
         }
         if(maxSizeWeek-minutesNWeek>0){
-            maxSizeWeek=(maxSizeWeek-minutesNWeek)*(((double)(100-CurrentUser.getRole().getDistractionFactor()))/100);
+            maxSizeWeek=(maxSizeWeek-minutesNWeek)*(((double)(100-CurrentUser.getUser().getDistractionFactor()))/100);
         }else{
             maxSizeWeek=(maxSizeWeek-minutesNWeek);
         }
@@ -228,7 +228,7 @@ public class ColumnGrid<T> extends Grid<T> {
     }
 
     private int googleEventCheck(int minutes, LocalDate startDateN, LocalDate endDate) {
-        if(CurrentUser.getRole().isConnectGoogle()){
+        if(CurrentUser.getUser().isConnectGoogle()){
             try {
                 List<Event> eventList = GoogleCalendarConnector.connect(this.userRepository);
                 if(eventList!=null&&!eventList.isEmpty()){
@@ -271,36 +271,36 @@ public class ColumnGrid<T> extends Grid<T> {
         LocalTime timedayBlockedCurrentWeek;
         switch (CurrentWeekNow.getDayOfWeek()) {
             case MONDAY:
-                timedayCurrentWeek = CurrentUser.getRole().getTimeSettings().get(DayOfWeek.MONDAY.toString());
-                timedayBlockedCurrentWeek = CurrentUser.getRole().getBlockedTimeSettings().get(DayOfWeek.MONDAY.toString());
+                timedayCurrentWeek = CurrentUser.getUser().getTimeSettings().get(DayOfWeek.MONDAY.toString());
+                timedayBlockedCurrentWeek = CurrentUser.getUser().getBlockedTimeSettings().get(DayOfWeek.MONDAY.toString());
                 maxSizeCurrentWeek += (timedayCurrentWeek.getHour() * 60 + timedayCurrentWeek.getMinute()) - (timedayBlockedCurrentWeek.getHour() * 60 + timedayBlockedCurrentWeek.getMinute());
             case TUESDAY:
-                timedayCurrentWeek = CurrentUser.getRole().getTimeSettings().get(DayOfWeek.TUESDAY.toString());
-                timedayBlockedCurrentWeek = CurrentUser.getRole().getBlockedTimeSettings().get(DayOfWeek.TUESDAY.toString());
+                timedayCurrentWeek = CurrentUser.getUser().getTimeSettings().get(DayOfWeek.TUESDAY.toString());
+                timedayBlockedCurrentWeek = CurrentUser.getUser().getBlockedTimeSettings().get(DayOfWeek.TUESDAY.toString());
                 maxSizeCurrentWeek += (timedayCurrentWeek.getHour() * 60 + timedayCurrentWeek.getMinute()) - (timedayBlockedCurrentWeek.getHour() * 60 + timedayBlockedCurrentWeek.getMinute());
             case WEDNESDAY:
-                timedayCurrentWeek = CurrentUser.getRole().getTimeSettings().get(DayOfWeek.WEDNESDAY.toString());
-                timedayBlockedCurrentWeek = CurrentUser.getRole().getBlockedTimeSettings().get(DayOfWeek.WEDNESDAY.toString());
+                timedayCurrentWeek = CurrentUser.getUser().getTimeSettings().get(DayOfWeek.WEDNESDAY.toString());
+                timedayBlockedCurrentWeek = CurrentUser.getUser().getBlockedTimeSettings().get(DayOfWeek.WEDNESDAY.toString());
                 maxSizeCurrentWeek += (timedayCurrentWeek.getHour() * 60 + timedayCurrentWeek.getMinute()) - (timedayBlockedCurrentWeek.getHour() * 60 + timedayBlockedCurrentWeek.getMinute());
             case THURSDAY:
-                timedayCurrentWeek = CurrentUser.getRole().getTimeSettings().get(DayOfWeek.THURSDAY.toString());
-                timedayBlockedCurrentWeek = CurrentUser.getRole().getBlockedTimeSettings().get(DayOfWeek.THURSDAY.toString());
+                timedayCurrentWeek = CurrentUser.getUser().getTimeSettings().get(DayOfWeek.THURSDAY.toString());
+                timedayBlockedCurrentWeek = CurrentUser.getUser().getBlockedTimeSettings().get(DayOfWeek.THURSDAY.toString());
                 maxSizeCurrentWeek += (timedayCurrentWeek.getHour() * 60 + timedayCurrentWeek.getMinute()) - (timedayBlockedCurrentWeek.getHour() * 60 + timedayBlockedCurrentWeek.getMinute());
             case FRIDAY:
-                timedayCurrentWeek = CurrentUser.getRole().getTimeSettings().get(DayOfWeek.FRIDAY.toString());
-                timedayBlockedCurrentWeek = CurrentUser.getRole().getBlockedTimeSettings().get(DayOfWeek.FRIDAY.toString());
+                timedayCurrentWeek = CurrentUser.getUser().getTimeSettings().get(DayOfWeek.FRIDAY.toString());
+                timedayBlockedCurrentWeek = CurrentUser.getUser().getBlockedTimeSettings().get(DayOfWeek.FRIDAY.toString());
                 maxSizeCurrentWeek += (timedayCurrentWeek.getHour() * 60 + timedayCurrentWeek.getMinute()) - (timedayBlockedCurrentWeek.getHour() * 60 + timedayBlockedCurrentWeek.getMinute());
             case SATURDAY:
-                timedayCurrentWeek = CurrentUser.getRole().getTimeSettings().get(DayOfWeek.SATURDAY.toString());
-                timedayBlockedCurrentWeek = CurrentUser.getRole().getBlockedTimeSettings().get(DayOfWeek.SATURDAY.toString());
+                timedayCurrentWeek = CurrentUser.getUser().getTimeSettings().get(DayOfWeek.SATURDAY.toString());
+                timedayBlockedCurrentWeek = CurrentUser.getUser().getBlockedTimeSettings().get(DayOfWeek.SATURDAY.toString());
                 maxSizeCurrentWeek += (timedayCurrentWeek.getHour() * 60 + timedayCurrentWeek.getMinute()) - (timedayBlockedCurrentWeek.getHour() * 60 + timedayBlockedCurrentWeek.getMinute());
             case SUNDAY:
-                timedayCurrentWeek = CurrentUser.getRole().getTimeSettings().get(DayOfWeek.SUNDAY.toString());
-                timedayBlockedCurrentWeek = CurrentUser.getRole().getBlockedTimeSettings().get(DayOfWeek.SUNDAY.toString());
+                timedayCurrentWeek = CurrentUser.getUser().getTimeSettings().get(DayOfWeek.SUNDAY.toString());
+                timedayBlockedCurrentWeek = CurrentUser.getUser().getBlockedTimeSettings().get(DayOfWeek.SUNDAY.toString());
                 maxSizeCurrentWeek += (timedayCurrentWeek.getHour() * 60 + timedayCurrentWeek.getMinute()) - (timedayBlockedCurrentWeek.getHour() * 60 + timedayBlockedCurrentWeek.getMinute());
         }
         if (maxSizeCurrentWeek - minutesCurrentWeek > 0){
-            maxSizeCurrentWeek = (maxSizeCurrentWeek - minutesCurrentWeek) * (((double) (100 - CurrentUser.getRole().getDistractionFactor())) / 100);
+            maxSizeCurrentWeek = (maxSizeCurrentWeek - minutesCurrentWeek) * (((double) (100 - CurrentUser.getUser().getDistractionFactor())) / 100);
         }else{
             maxSizeCurrentWeek = (maxSizeCurrentWeek - minutesCurrentWeek);
         }
@@ -311,7 +311,7 @@ public class ColumnGrid<T> extends Grid<T> {
         int sizeOfTasksCurrentWeek= 0;
         for (T t:retList){
             if(t instanceof Task){
-                int size = CurrentUser.getRole().getSizeSettings().get(((Task) t).getSize().toString());
+                int size = CurrentUser.getUser().getSizeSettings().get(((Task) t).getSize().toString());
                 sizeOfTasksCurrentWeek+=size;
             }
         }
@@ -325,14 +325,14 @@ public class ColumnGrid<T> extends Grid<T> {
     }
 
     private void checkDoneForToday(List<T> retList) {
-        LocalTime time = CurrentUser.getRole().getTimeSettings().get(LocalDate.now().getDayOfWeek().toString());
-        LocalTime blockedTime = CurrentUser.getRole().getBlockedTimeSettings().get(LocalDate.now().getDayOfWeek().toString());
+        LocalTime time = CurrentUser.getUser().getTimeSettings().get(LocalDate.now().getDayOfWeek().toString());
+        LocalTime blockedTime = CurrentUser.getUser().getBlockedTimeSettings().get(LocalDate.now().getDayOfWeek().toString());
 
         int minutes = 0;
         double maxsize;
         minutes=this.googleEventCheck(minutes,null,null);
         if(( (time.getHour()*60+time.getMinute()-minutes-blockedTime.getHour()*60-blockedTime.getMinute()))>0) {
-             maxsize = (time.getHour() * 60 + time.getMinute() - minutes - blockedTime.getHour() * 60 - blockedTime.getMinute()) * (((double) (100 - CurrentUser.getRole().getDistractionFactor())) / 100);
+             maxsize = (time.getHour() * 60 + time.getMinute() - minutes - blockedTime.getHour() * 60 - blockedTime.getMinute()) * (((double) (100 - CurrentUser.getUser().getDistractionFactor())) / 100);
         }else{
             maxsize = (time.getHour() * 60 + time.getMinute() - minutes - blockedTime.getHour() * 60 - blockedTime.getMinute());
         }
