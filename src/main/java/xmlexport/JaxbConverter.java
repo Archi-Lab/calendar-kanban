@@ -64,9 +64,8 @@ public class JaxbConverter
         ByteArrayOutputStream byteArrayOutputStream = (ByteArrayOutputStream) importFile.getOutputBuffer();
         try(OutputStream outputStream = new FileOutputStream(filename)) {
             byteArrayOutputStream.writeTo(outputStream);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
+            log.error(e.getMessage());
             e.printStackTrace();
         }
         File file = new File(filename);

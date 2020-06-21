@@ -65,6 +65,7 @@ public class AdminViewController {
             List<Category> categories=categoryRepository.findByOwner(user);
             return new FileInputStream(JaxbConverter.export(tasks,categories));
         } catch (FileNotFoundException e) {
+            log.error(e.getMessage());
             e.printStackTrace();
         }
         return null;

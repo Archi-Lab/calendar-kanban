@@ -95,6 +95,7 @@ public class SettingsViewImpl extends VerticalLayout implements SettingsView {
                 this.controller.setUserDistractionFactor(Integer.parseInt(e.getValue()));
                 distractionFactorField.setErrorMessage(null);
             }catch (NumberFormatException exception){
+                log.error(exception.getMessage());
                 distractionFactorField.setErrorMessage("Bitte nur Zahlen");
             }
         });
@@ -104,6 +105,7 @@ public class SettingsViewImpl extends VerticalLayout implements SettingsView {
                 this.controller.setUserNWeeks(Integer.parseInt(e.getValue()));
                 nWeeksField.setErrorMessage(null);
             }catch (NumberFormatException exception){
+                log.error(exception.getMessage());
                 nWeeksField.setErrorMessage("Bitte nur Zahlen");
             }
         });
@@ -227,6 +229,7 @@ public class SettingsViewImpl extends VerticalLayout implements SettingsView {
                         try {
                             this.controller.importFileUploaded(((MemoryBuffer) e.getSource().getReceiver()),true);
                         } catch (JAXBException jaxbException) {
+                            log.error(jaxbException.getMessage());
                             jaxbException.printStackTrace();
                             new Notification("Hochladen fehgeschlagen", 2000).open();
                         }
@@ -236,6 +239,7 @@ public class SettingsViewImpl extends VerticalLayout implements SettingsView {
                         try {
                             this.controller.importFileUploaded(((MemoryBuffer) e.getSource().getReceiver()),false);
                         } catch (JAXBException jaxbException) {
+                            log.error(jaxbException.getMessage());
                             jaxbException.printStackTrace();
                             new Notification("Hochladen fehgeschlagen", 2000).open();
                         }
@@ -291,6 +295,7 @@ public class SettingsViewImpl extends VerticalLayout implements SettingsView {
                     googlePage.add(getGoogleEvents());
                 } catch (IOException | GeneralSecurityException ioException) {
                     //Logger.getAnonymousLogger().log(Level.ALL,ioException.getMessage());
+                    log.error(ioException.getMessage());
                     ioException.printStackTrace();
                 }
             }
@@ -344,6 +349,7 @@ public class SettingsViewImpl extends VerticalLayout implements SettingsView {
                 Label label = new Label("Betroffene Events:"+eventList.size());
                 verticalLayout.add(label);
             } catch (IOException | GeneralSecurityException e) {
+                log.error(e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -419,6 +425,7 @@ public class SettingsViewImpl extends VerticalLayout implements SettingsView {
                     this.controller.setSizeSettings(size.toString(),sizeValue.getValue(),sizeUnit.getValue());
                     sizeValue.setErrorMessage(null);
                 }catch (NumberFormatException exception){
+                    log.error(exception.getMessage());
                     sizeValue.setErrorMessage("Bitte nur Zahlen");
                 }
             });
@@ -427,6 +434,7 @@ public class SettingsViewImpl extends VerticalLayout implements SettingsView {
                     this.controller.setSizeSettings(size.toString(),sizeValue.getValue(),sizeUnit.getValue());
                     sizeValue.setErrorMessage(null);
                 }catch (NumberFormatException exception){
+                    log.error(exception.getMessage());
                     sizeValue.setErrorMessage("Bitte nur Zahlen");
                 }
             });

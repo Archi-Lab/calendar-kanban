@@ -258,6 +258,7 @@ public class ColumnGrid<T> extends Grid<T> {
                     }
                 }
             } catch (IOException | GeneralSecurityException e) {
+                log.error(e.getMessage());
                 e.printStackTrace();
             }
         }

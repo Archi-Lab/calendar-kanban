@@ -100,6 +100,7 @@ public class SettingsViewController {
             List<Category> categories=categoryRepository.findByOwner(CurrentUser.getUser());
             return new FileInputStream(JaxbConverter.export(tasks,categories));
         } catch (FileNotFoundException e) {
+            log.error(e.getMessage());
             e.printStackTrace();
         }
         return null;

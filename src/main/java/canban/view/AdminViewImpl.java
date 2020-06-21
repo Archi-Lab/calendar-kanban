@@ -120,6 +120,7 @@ public class AdminViewImpl extends VerticalLayout implements AdminView {
                     dialog.add(layout);
                     dialog.open();
                 } catch (JAXBException jaxbException) {
+                    log.error(jaxbException.getMessage());
                     jaxbException.printStackTrace();
                     new Notification("Hochladen fehgeschlagen", 2000).open();
                 }
