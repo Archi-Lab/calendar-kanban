@@ -1,6 +1,7 @@
 package canban.component;
 
 import authentication.CurrentUser;
+import canban.controller.TaskViewController;
 import canban.entity.Task;
 import canban.google.GoogleCalendarConnector;
 import canban.repository.TaskRepository;
@@ -14,6 +15,8 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -27,6 +30,8 @@ import java.util.*;
 
 @HtmlImport(value = "./html/file.html")
 public class ColumnGrid<T> extends Grid<T> {
+
+    private static final Logger log = LoggerFactory.getLogger(ColumnGrid.class);
 
     private final TaskView taskView;
     private Task.Priority priority;

@@ -2,6 +2,7 @@ package canban.view;
 
 import authentication.AccessControlFactory;
 import authentication.CurrentUser;
+import canban.ApplicationStart;
 import canban.component.ColumnGrid;
 import canban.controller.TaskViewController;
 import canban.entity.Category;
@@ -29,6 +30,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +41,9 @@ import java.util.Optional;
 @HtmlImport(value = "./html/file.html")
 @Route("Termin")
 public class TaskViewImpl extends VerticalLayout implements TaskView {
+
+
+    private static final Logger log = LoggerFactory.getLogger(TaskViewImpl.class);
 
     //Components
     private final TextField searchField = new TextField("Search");

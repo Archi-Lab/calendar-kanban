@@ -18,10 +18,14 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 
 public class TaskForm extends Div {
+
+    private static final Logger log = LoggerFactory.getLogger(TaskForm.class);
 
     private final TaskViewImpl view;
     private TextField title = new TextField("Titel");

@@ -15,6 +15,9 @@ import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import xmlexport.JaxbConverter;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -45,6 +48,7 @@ public class GoogleCalendarConnector {
     private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR_READONLY);
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
 
+    private static final Logger log = LoggerFactory.getLogger(GoogleCalendarConnector.class);
 
 
     /**

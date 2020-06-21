@@ -3,7 +3,10 @@ package xmlexport;
 
 import canban.entity.Category;
 import canban.entity.Task;
+import canban.view.AdminViewImpl;
 import com.vaadin.flow.component.upload.receivers.FileData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -17,6 +20,8 @@ import javax.xml.bind.Unmarshaller;
 
 public class JaxbConverter
 {
+    private static final Logger log = LoggerFactory.getLogger(JaxbConverter.class);
+
     public static String export(List<Task> taskList, List<Category> categoryList)
     {
         //Method which uses JAXB to convert object to XML

@@ -2,6 +2,7 @@ package canban.form;
 
 import authentication.CurrentUser;
 import canban.component.ColorFactory;
+import canban.google.GoogleCalendarConnector;
 import canban.view.SettingsView;
 import canban.entity.Category;
 import com.vaadin.flow.component.button.Button;
@@ -13,11 +14,15 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import canban.repository.CategoryRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 
 
 public class CategoryForm extends Div {
+
+    private static final Logger log = LoggerFactory.getLogger(CategoryForm.class);
 
     private SettingsView view;
     private CategoryRepository categoryRepository;

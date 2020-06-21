@@ -6,6 +6,8 @@ import canban.entity.User;
 import canban.form.UserForm;
 import canban.repository.TaskRepository;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xmlexport.TaskList;
 import canban.controller.AdminViewController;
 import canban.repository.CategoryRepository;
@@ -33,6 +35,9 @@ import javax.xml.bind.JAXBException;
 
 @Route("Admin")
 public class AdminViewImpl extends VerticalLayout implements AdminView {
+
+
+    private static final Logger log = LoggerFactory.getLogger(AdminViewImpl.class);
 
     private Grid<User> userGrid = new Grid<>(User.class,false);
     private Button back = new Button();

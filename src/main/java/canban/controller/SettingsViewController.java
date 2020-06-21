@@ -9,6 +9,8 @@ import canban.repository.TaskRepository;
 import canban.repository.UserRepository;
 import canban.view.SettingsView;
 import com.google.api.services.calendar.model.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xmlexport.TaskList;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
@@ -26,6 +28,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class SettingsViewController {
+
+    private static final Logger log = LoggerFactory.getLogger(SettingsViewController.class);
 
     private TaskRepository taskRepository;
     private CategoryRepository categoryRepository;

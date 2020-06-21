@@ -34,6 +34,8 @@ import com.vaadin.flow.router.Route;
 import canban.repository.CategoryRepository;
 import canban.repository.UserRepository;
 import com.vaadin.flow.server.StreamResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -47,6 +49,9 @@ import java.util.stream.Stream;
 @CssImport("./styles/style.css")
 @Route("Settings")
 public class SettingsViewImpl extends VerticalLayout implements SettingsView {
+
+
+    private static final Logger log = LoggerFactory.getLogger(SettingsViewImpl.class);
 
     private Button backBtn;
     private Button deleteOldTask = new Button("Delete old tasks");

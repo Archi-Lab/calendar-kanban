@@ -7,11 +7,15 @@ import canban.repository.CategoryRepository;
 import canban.repository.UserRepository;
 import canban.view.TaskView;
 import canban.view.TaskViewImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.List;
 
 public class TaskViewController {
+
+    private static final Logger log = LoggerFactory.getLogger(TaskViewController.class);
 
     private UserRepository userRepository;
     private TaskView view;

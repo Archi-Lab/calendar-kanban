@@ -7,6 +7,7 @@ import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.extensions.java6.auth.oauth2.VerificationCodeReceiver;
 import com.google.api.client.util.Preconditions;
 import com.vaadin.flow.component.Component;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.io.IOException;
@@ -21,6 +22,7 @@ public class SimpleAuthorizationCodeInstalledApp{
     private final VerificationCodeReceiver receiver;
     private static final Logger LOGGER = Logger.getLogger(SimpleAuthorizationCodeInstalledApp.class.getName());
     private static Component rootComponent;
+
 
     public SimpleAuthorizationCodeInstalledApp(AuthorizationCodeFlow flow, VerificationCodeReceiver receiver) {
         super();

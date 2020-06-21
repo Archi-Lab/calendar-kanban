@@ -10,8 +10,12 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import canban.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserForm extends Div {
+
+    private static final Logger log = LoggerFactory.getLogger(UserForm.class);
 
     private AdminView adminView;
     private UserRepository userRepository;
