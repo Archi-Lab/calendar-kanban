@@ -1,5 +1,7 @@
 package canban.entity;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import javax.persistence.*;
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -98,7 +100,7 @@ public class User {
         distractionFactor=30;
         nweeksValue=1;
         this.username = name;
-        this.password = password;
+        this.password = DigestUtils.md5Hex(password);
         this.rolle = rolle;
     }
 
@@ -115,7 +117,7 @@ public class User {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = DigestUtils.md5Hex(password);
     }
 
     public Rolle getRolle() {

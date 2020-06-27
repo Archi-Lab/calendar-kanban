@@ -2,6 +2,7 @@ package canban;
 
 import canban.entity.Category;
 import canban.entity.User;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,7 @@ public class ApplicationStart {
     public CommandLineRunner initData(UserRepository userRepository) {
         return (args) -> {
 
-            User user = userRepository.findByUsernameEqualsAndPasswordEquals("test","test");
+            User user = userRepository.findByUsernameEqualsAndPasswordEquals("test", DigestUtils.md5Hex("test"));
             if(user==null){
                 log.info("INIT USER");
                 log.info("-------------------------------");
@@ -33,7 +34,7 @@ public class ApplicationStart {
                 userRepository.save(user); Category bachelor = new Category("Bachelor");
 
             }
-            User user2 = userRepository.findByUsernameEqualsAndPasswordEquals("admin","admin");
+            User user2 = userRepository.findByUsernameEqualsAndPasswordEquals("admin",DigestUtils.md5Hex("admin"));
             if (user2==null){
                 log.info("INIT ADMIN");
                 log.info("-------------------------------");

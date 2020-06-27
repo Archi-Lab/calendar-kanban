@@ -74,17 +74,15 @@ public class UserForm extends Div {
     }
 
     public void fillLayout(User user){
+        passwordField.setValue("");
+        repeatPasswordField.setValue("");
         if(user==null){
             this.user=null;
             username.setValue("");
-            passwordField.setValue("");
-            repeatPasswordField.setValue("");
             box.setValue(User.Rolle.NUTZER);
         }else{
             this.user=user;
             username.setValue(user.getName());
-            passwordField.setValue(user.getPassword());
-            repeatPasswordField.setValue(user.getPassword());
             box.setValue(user.getRolle());
         }
     }
