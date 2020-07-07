@@ -58,7 +58,7 @@ public class UserForm extends Div {
     }
 
     private void createUser() {
-        if(passwordField.getValue().trim().length()==0||repeatPasswordField.getValue().trim().length()==0||username.getValue().trim().length()==0){
+        if((user == null && (passwordField.getValue().trim().length()==0||repeatPasswordField.getValue().trim().length()==0))||username.getValue().trim().length()==0){
             new Notification("Werte nicht komplett befüllt", 2000).open();
             return;
         }
@@ -66,7 +66,9 @@ public class UserForm extends Div {
             user = new User();
         }
         user.setName(this.username.getValue());
-        user.setPassword(passwordField.getValue());
+        if(passwordField.getValue().length()>0) {
+            user.setPassword(passwordField.getValue());
+        }
         user.setRolle((User.Rolle) box.getValue());
         this.userRepository.save(user);
         this.setVisible(false);
