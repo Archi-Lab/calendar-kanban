@@ -1,0 +1,72 @@
+vaadin-grid-cell-content {
+    text-align: center;
+}
+input{
+    color: rebeccapurple;
+}
+
+.columnitem label{
+    text-align: center;
+    white-space: normal;
+    width: 100%;
+}
+
+.columnitem iron-icon{
+    height: 100%;
+}
+
+.btnLayout{
+    border-radius: 50%;
+    background: white;
+}
+
+.product-form {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    overflow: auto;
+    /*background: var(--lumo-base-color);*/
+    background: white;
+    box-shadow: 0 0 3px 2px grey;
+}
+
+.centerLayout{
+    align-items: baseline;
+}
+
+.toBusyGrid{
+    background: red;
+}
+
+.toBusyGrid vaadin-grid-cell-content{
+    background: red;
+}
+
+.deleteBtn{
+    color: red;
+}
+
+.main-layout {
+
+    /* Used by the menu and form overlays */
+    /*--overlay-box-shadow: 0 0 3px 2px var(--lumo-contrast-10pct);*/
+    --overlay-box-shadow: 0 0 3px 2px #e6fce6;
+
+}
+
+@media only screen and (max-width: 1210px) {
+
+    .mobileItem{
+        visibility: hidden;
+        width: 0px;
+    }
+}
+
+@media only screen and (max-width: 1090px) {
+
+    .mobileItemSmall{
+        visibility: hidden;
+        width: 0px;
+    }
+}
